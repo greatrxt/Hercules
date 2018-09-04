@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Hercules</string>
+    <string name="app_version">v1.0</string>
+    <string name="routine">Routine</string>
+    <string name="body_part">Body Part</string>
+    <string name="exercise">Exercise</string>
+    <string name="empty"></string>
+    <string name="name">Name</string>
+    <string name="number_of_sets">Number Of Sets</string>
+    <string name="repetitions">Repetitions</string>
+    <string name="count_in_reverse">Count In Reverse</string>
+    <string name="duration">Duration ( In Seconds )</string>
+    <string name="time_to_get_in_position">Time To Get In Position ( In Seconds )</string>
+    <string name="rest_time_after_exercise">Rest Time After Exercise ( In Seconds )</string>
+    <string name="create_exercise">Create Exercise</string>
+</resources>
