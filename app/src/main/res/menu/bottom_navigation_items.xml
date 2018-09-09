@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_item1"
-        android:icon="@drawable/ic_exercise"
-        android:title="@string/exercise" />
+        android:icon="@drawable/ic_workout_limegreen"
+        android:title="@string/workout" />
     <item
         android:id="@+id/action_item2"
         android:icon="@drawable/ic_routine"

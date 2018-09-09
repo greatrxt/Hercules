@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:padding="15dp"
     tools:context=".ui.RoutineActivity">
 
     <RelativeLayout
@@ -93,23 +93,23 @@
             fab:menu_showShadow="true">
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/menu_item_exercise"
+                android:id="@+id/menu_item_add_rest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_exercise_white"
+                android:src="@drawable/ic_time_gap_white"
                 fab:fab_colorNormal="@color/colorPrimary"
                 fab:fab_colorPressed="@color/colorPrimaryDark"
-                fab:fab_label="@string/add_exercise"
+                fab:fab_label="@string/add_rest"
                 fab:fab_size="normal" />
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/menu_item_body_part"
+                android:id="@+id/menu_item_add_exercise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_body_part_white"
+                android:src="@drawable/ic_workout_white"
                 fab:fab_colorNormal="@color/colorPrimary"
                 fab:fab_colorPressed="@color/colorPrimaryDark"
-                fab:fab_label="@string/add_body_part"
+                fab:fab_label="@string/add_workout"
                 fab:fab_size="normal" />
 
         </com.github.clans.fab.FloatingActionMenu>

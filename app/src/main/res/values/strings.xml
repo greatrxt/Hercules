@@ -3,7 +3,7 @@
     <string name="app_version">v1.0</string>
     <string name="routine">Routine</string>
     <string name="body_part">Body Part</string>
-    <string name="exercise">Exercise</string>
+    <string name="workout">Workout</string>
     <string name="empty"></string>
     <string name="name">Name</string>
     <string name="number_of_sets">Number Of Sets</string>
@@ -17,6 +17,8 @@
     <string name="new_routine">New Routine</string>
     <string name="add_new_body_part">Add New Body Part</string>
     <string name="new_body_part">New Body Part</string>
-    <string name="add_exercise">Add Exercise</string>
-    <string name="add_body_part">Add Body Part</string>
+    <string name="add_workout">Add Workout</string>
+    <string name="add_body_part">Add All Workouts For A Body Part</string>
+    <string name="add_rest">Add Rest</string>
+    <string name="add_time_gap">Add Time Gap</string>
 </resources>
