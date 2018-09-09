@@ -232,15 +232,6 @@ public class RoutineItem {
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Generated(hash = 1593055851)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getRoutineItemDao() : null;
-    }
-
     enum RoutineItemType {
         REST, EXERCISE
     }
@@ -255,5 +246,19 @@ public class RoutineItem {
         public String convertToDatabaseValue(RoutineItemType entityProperty) {
             return entityProperty.name();
         }
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
+    @Generated(hash = 1593055851)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getRoutineItemDao() : null;
     }
 }

@@ -19,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
 
         bottomNavigationView.setOnNavigationItemSelectedListener
                 (new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -47,10 +46,23 @@ public class MainActivity extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, ItemOneFragment.newInstance());
+        transaction.replace(R.id.frame_layout, ItemTwoFragment.newInstance());
         transaction.commit();
 
         //Used to select an item programmatically
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Fragment selectedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
+        if (selectedFragment instanceof ItemOneFragment) {
+            ((ItemOneFragment) selectedFragment).populateExerciseListView();
+        } else if (selectedFragment instanceof ItemTwoFragment) {
+
+        } else if (selectedFragment instanceof ItemThreeFragment) {
+
+        }
     }
 }

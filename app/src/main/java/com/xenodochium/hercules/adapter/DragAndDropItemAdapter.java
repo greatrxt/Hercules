@@ -51,7 +51,7 @@ public class DragAndDropItemAdapter extends DragItemAdapter<Pair<Long, String>, 
 
         ViewHolder(final View itemView) {
             super(itemView, mGrabHandleId, mDragOnLongPress);
-            mText = (TextView) itemView.findViewById(R.id.text);
+            mText = itemView.findViewById(R.id.text_view_exercise_name);
         }
 
         @Override

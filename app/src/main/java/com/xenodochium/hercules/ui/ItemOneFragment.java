@@ -1,34 +1,27 @@
-/*
- * Copyright (c) 2017. Truiton (http://www.truiton.com/).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * Contributors:
- * Mohit Gupt (https://github.com/mohitgupt)
- *
- */
-
 package com.xenodochium.hercules.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.xenodochium.hercules.R;
+import com.xenodochium.hercules.application.Hercules;
+import com.xenodochium.hercules.model.RoutineItem;
 
-public class ItemOneFragment extends Fragment {
+import java.util.List;
+
+public class ItemOneFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+    private ListView listViewExercise;
+    private View fragmentView;
+    private FloatingActionButton buttonAddExercise;
+
     public static ItemOneFragment newInstance() {
         ItemOneFragment fragment = new ItemOneFragment();
         return fragment;
@@ -39,9 +32,48 @@ public class ItemOneFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Initialize Views
+     */
+    private void initializeViews() {
+        listViewExercise = fragmentView.findViewById(R.id.list_view_exercise);
+        buttonAddExercise = fragmentView.findViewById(R.id.button_add_exercise);
+        buttonAddExercise.setOnClickListener(this);
+        populateExerciseListView();
+    }
+
+    /**
+     * Populate list
+     */
+    public void populateExerciseListView() {
+        List<RoutineItem> routineItemList = Hercules.getInstance().getDaoSession().getRoutineItemDao().loadAll();
+        ArrayAdapter<RoutineItem> dataAdapter = new ArrayAdapter<RoutineItem>(getActivity(), android.R.layout.simple_list_item_1, routineItemList);
+        listViewExercise.setAdapter(dataAdapter);
+        listViewExercise.setOnItemClickListener(this);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_item_one, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_item_one, container, false);
+        initializeViews();
+        return fragmentView;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_add_exercise:
+                startActivity(new Intent(getActivity(), ExerciseActivity.class));
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Long routineItemId = ((RoutineItem) adapterView.getItemAtPosition(position)).getRoutineItemId();
+        Intent intent = new Intent(getActivity(), ExerciseActivity.class);
+        intent.putExtra("routineItemId", routineItemId);
+        startActivity(intent);
     }
 }

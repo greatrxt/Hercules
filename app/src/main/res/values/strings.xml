@@ -12,5 +12,11 @@
     <string name="duration">Duration ( In Seconds )</string>
     <string name="time_to_get_in_position">Time To Get In Position ( In Seconds )</string>
     <string name="rest_time_after_exercise">Rest Time After Exercise ( In Seconds )</string>
-    <string name="create_exercise">Create Exercise</string>
+    <string name="new_exercise">New Exercise</string>
+    <string name="cannot_be_empty">Cannot Be Empty</string>
+    <string name="new_routine">New Routine</string>
+    <string name="add_new_body_part">Add New Body Part</string>
+    <string name="new_body_part">New Body Part</string>
+    <string name="add_exercise">Add Exercise</string>
+    <string name="add_body_part">Add Body Part</string>
 </resources>

@@ -5,8 +5,18 @@
     android:layout_height="match_parent"
     tools:context="com.xenodochium.hercules.ui.ItemThreeFragment">
 
+    <TextView
+        android:id="@+id/text_view_body_part"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:text="@string/body_part"
+        android:textColor="@color/colorPrimary"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/buttonAddBodyPart"
+        android:id="@+id/button_add_body_part"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -15,5 +25,13 @@
         android:backgroundTint="@color/colorPrimary"
         android:src="@drawable/ic_add_icon_white"
         app:backgroundTint="@color/colorPrimaryDark" />
+
+
+    <ListView
+        android:id="@+id/list_view_body_part"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/text_view_body_part" />
 
 </RelativeLayout>
