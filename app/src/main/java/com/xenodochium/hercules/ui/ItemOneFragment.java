@@ -13,7 +13,7 @@ import android.widget.ListView;
 
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
-import com.xenodochium.hercules.model.RoutineItem;
+import com.xenodochium.hercules.model.Workout;
 
 import java.util.List;
 
@@ -46,8 +46,8 @@ public class ItemOneFragment extends Fragment implements View.OnClickListener, A
      * Populate list
      */
     public void populateExerciseListView() {
-        List<RoutineItem> routineItemList = Hercules.getInstance().getDaoSession().getRoutineItemDao().loadAll();
-        ArrayAdapter<RoutineItem> dataAdapter = new ArrayAdapter<RoutineItem>(getActivity(), android.R.layout.simple_list_item_1, routineItemList);
+        List<Workout> workoutList = Hercules.getInstance().getDaoSession().getWorkoutDao().loadAll();
+        ArrayAdapter<Workout> dataAdapter = new ArrayAdapter<Workout>(getActivity(), android.R.layout.simple_list_item_1, workoutList);
         listViewExercise.setAdapter(dataAdapter);
         listViewExercise.setOnItemClickListener(this);
     }
@@ -64,16 +64,16 @@ public class ItemOneFragment extends Fragment implements View.OnClickListener, A
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_add_exercise:
-                startActivity(new Intent(getActivity(), ExerciseActivity.class));
+                startActivity(new Intent(getActivity(), WorkoutActivity.class));
                 break;
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Long routineItemId = ((RoutineItem) adapterView.getItemAtPosition(position)).getRoutineItemId();
-        Intent intent = new Intent(getActivity(), ExerciseActivity.class);
-        intent.putExtra("routineItemId", routineItemId);
+        Long workoutId = ((Workout) adapterView.getItemAtPosition(position)).getWorkoutId();
+        Intent intent = new Intent(getActivity(), WorkoutActivity.class);
+        intent.putExtra("workoutId", workoutId);
         startActivity(intent);
     }
 }

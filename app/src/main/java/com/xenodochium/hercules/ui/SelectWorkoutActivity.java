@@ -1,5 +1,6 @@
 package com.xenodochium.hercules.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,37 +10,38 @@ import android.widget.ListView;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.adapter.MultiSelectArrayAdapter;
 import com.xenodochium.hercules.application.Hercules;
-import com.xenodochium.hercules.model.RoutineItem;
+import com.xenodochium.hercules.model.Workout;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SelectRoutineItemActivity extends AppCompatActivity implements View.OnClickListener {
+public class SelectWorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String ROUTINE_ITEM_TYPE = "routineItemType", EXERCISE = "exercise", BODY_PART = "bodyPart";
-    ListView listViewRoutineItems;
+    ListView listViewWorkouts;
     Button buttonOk, buttonCancel;
+    MultiSelectArrayAdapter multiSelectArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_routine_item);
+        setContentView(R.layout.activity_select_workout);
         getSupportActionBar().hide();
 
         initializeViews();
-        populateListViewWithRoutineItems();
+        populateListViewWithWorkouts();
     }
 
-    private void populateListViewWithRoutineItems() {
-        List<RoutineItem> routineItems = Hercules.getInstance().getDaoSession().getRoutineItemDao().loadAll();
-        MultiSelectArrayAdapter multiSelectArrayAdapter = new MultiSelectArrayAdapter(getApplicationContext(), routineItems);
-        listViewRoutineItems.setAdapter(multiSelectArrayAdapter);
+    private void populateListViewWithWorkouts() {
+        List<Workout> workouts = Hercules.getInstance().getDaoSession().getWorkoutDao().loadAll();
+        multiSelectArrayAdapter = new MultiSelectArrayAdapter(getApplicationContext(), workouts);
+        listViewWorkouts.setAdapter(multiSelectArrayAdapter);
     }
 
     /**
      * Initialize all views
      */
     private void initializeViews() {
-        listViewRoutineItems = findViewById(R.id.list_view_routine_items);
+        listViewWorkouts = findViewById(R.id.list_view_workouts);
         buttonCancel = findViewById(R.id.button_cancel);
         buttonOk = findViewById(R.id.button_ok);
         buttonCancel.setOnClickListener(this);
@@ -48,13 +50,18 @@ public class SelectRoutineItemActivity extends AppCompatActivity implements View
 
     @Override
     public void onClick(View view) {
+        Intent result = new Intent();
         switch (view.getId()) {
             case R.id.button_cancel:
-                finish();
+                setResult(RESULT_CANCELED);
                 break;
             case R.id.button_ok:
-
+                List<Workout> selectedWorkouts = multiSelectArrayAdapter.getSelectedItems();
+                result.putExtra("selectedWorkouts", (Serializable) selectedWorkouts);
+                setResult(RESULT_OK, result);
                 break;
         }
+
+        finish();
     }
 }

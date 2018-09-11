@@ -2,4 +2,5 @@
 <resources>
     <dimen name="add_icon_margin">18dp</dimen>
     <dimen name="edit_text_bottom_margin">10dp</dimen>
+    <dimen name="drag_drop_list_item_font_size">18sp</dimen>
 </resources>

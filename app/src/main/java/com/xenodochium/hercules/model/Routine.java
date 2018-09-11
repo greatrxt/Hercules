@@ -7,10 +7,13 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToMany;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-public class Routine {
+public class Routine implements Serializable { //implementing serializable so that it could be passed from one activity to another using intent serializable extras
+
+    static final long serialVersionUID = 14334778;
 
     @Id
     private Long routineId;
@@ -18,22 +21,23 @@ public class Routine {
     @NotNull
     private String name;
 
-    @ToMany(referencedJoinProperty = "routineItemId")
-    private List<RoutineItem> routineItems;
-
     private boolean playInLoop;
 
+    @ToMany(referencedJoinProperty = "routineId")
+    private List<RoutineEntry> linkedRoutineEntries;
     /**
      * Used to resolve relations
      */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-
-    /**
-     * Used for active entity operations.
-     */
+    /** Used for active entity operations. */
     @Generated(hash = 1822163310)
     private transient RoutineDao myDao;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 
     @Generated(hash = 202976362)
     public Routine(Long routineId, @NotNull String name, boolean playInLoop) {
@@ -45,6 +49,7 @@ public class Routine {
     @Generated(hash = 708323760)
     public Routine() {
     }
+
 
     public Long getRoutineId() {
         return this.routineId;
@@ -74,31 +79,30 @@ public class Routine {
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 429888693)
-    public List<RoutineItem> getRoutineItems() {
-        if (routineItems == null) {
+    @Generated(hash = 1704873183)
+    public List<RoutineEntry> getLinkedRoutineEntries() {
+        if (linkedRoutineEntries == null) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            RoutineItemDao targetDao = daoSession.getRoutineItemDao();
-            List<RoutineItem> routineItemsNew = targetDao
-                    ._queryRoutine_RoutineItems(routineId);
+            RoutineEntryDao targetDao = daoSession.getRoutineEntryDao();
+            List<RoutineEntry> linkedRoutineEntriesNew = targetDao._queryRoutine_LinkedRoutineEntries(routineId);
             synchronized (this) {
-                if (routineItems == null) {
-                    routineItems = routineItemsNew;
+                if (linkedRoutineEntries == null) {
+                    linkedRoutineEntries = linkedRoutineEntriesNew;
                 }
             }
         }
-        return routineItems;
+        return linkedRoutineEntries;
     }
 
     /**
      * Resets a to-many relationship, making the next get call to query for a fresh result.
      */
-    @Generated(hash = 1629029994)
-    public synchronized void resetRoutineItems() {
-        routineItems = null;
+    @Generated(hash = 18279760)
+    public synchronized void resetLinkedRoutineEntries() {
+        linkedRoutineEntries = null;
     }
 
     /**
@@ -137,12 +141,12 @@ public class Routine {
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 360604408)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getRoutineDao() : null;
     }
+
+
 }

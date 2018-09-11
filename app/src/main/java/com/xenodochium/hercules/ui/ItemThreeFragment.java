@@ -8,10 +8,12 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
@@ -42,10 +44,54 @@ public class ItemThreeFragment extends Fragment implements View.OnClickListener 
         populateBodyPartListView();
     }
 
+    /**
+     * Populate with stored body parts
+     */
     private void populateBodyPartListView() {
         List<BodyPart> bodyPartList = Hercules.getInstance().getDaoSession().getBodyPartDao().loadAll();
         ArrayAdapter<BodyPart> dataAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, bodyPartList);
         listViewBodyPart.setAdapter(dataAdapter);
+        listViewBodyPart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> adapterView, View view, final int position, long id) {
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
+                View mView = layoutInflaterAndroid.inflate(R.layout.alert_box_add_body_part, null);
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getActivity());
+                alertDialogBuilderUserInput.setView(mView);
+
+                ((TextView) mView.findViewById(R.id.alert_text_header_body_part)).setText(getString(R.string.edit_body_part_name));
+                alertDialogBuilderUserInput.setCancelable(false);
+                final AlertDialog alertDialogAddExercise = alertDialogBuilderUserInput.create();
+                Button buttonAlertCancel = mView.findViewById(R.id.button_alert_cancel);
+                Button buttonAlertOk = mView.findViewById(R.id.button_alert_ok);
+                final EditText editTextBodyPart = mView.findViewById(R.id.edit_text_body_part);
+                editTextBodyPart.setText(((BodyPart) adapterView.getItemAtPosition(position)).getName());
+                buttonAlertOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (editTextBodyPart.getText().toString().isEmpty()) {
+                            editTextBodyPart.setError(getResources().getString(R.string.cannot_be_empty));
+                        } else {
+                            BodyPart bodyPart = new BodyPart();
+                            bodyPart.setBodyPartId(((BodyPart) adapterView.getItemAtPosition(position)).getBodyPartId());
+                            bodyPart.setName(editTextBodyPart.getText().toString().trim());
+                            Hercules.getInstance().getDaoSession().getBodyPartDao().insertOrReplace(bodyPart);
+                            populateBodyPartListView();
+                            alertDialogAddExercise.dismiss();
+                        }
+                    }
+                });
+                buttonAlertCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialogAddExercise.dismiss();
+                    }
+                });
+
+
+                alertDialogAddExercise.show();
+            }
+        });
     }
 
     @Override

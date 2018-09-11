@@ -1,19 +1,22 @@
 package com.xenodochium.hercules.model;
 
 import org.greenrobot.greendao.DaoException;
-import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.converter.PropertyConverter;
+
+import java.io.Serializable;
+import java.util.Random;
 
 @Entity
-public class RoutineItem {
+public class Workout implements Serializable { //implementing serializable so that it could be passed from one activity to another using intent serializable extras
+
+    static final long serialVersionUID = 322434343;
 
     @Id
-    private Long routineItemId;
+    private Long workoutId;
 
     @NotNull
     private String name;
@@ -34,8 +37,6 @@ public class RoutineItem {
 
     @ToOne(joinProperty = "bodyPartId")
     private BodyPart forBodyPart;
-    @Convert(converter = RoutineItemTypeConverter.class, columnType = String.class)
-    private RoutineItemType routineItemType;
     /**
      * Used to resolve relations
      */
@@ -44,17 +45,15 @@ public class RoutineItem {
     /**
      * Used for active entity operations.
      */
-    @Generated(hash = 1798729585)
-    private transient RoutineItemDao myDao;
+    @Generated(hash = 1950649078)
+    private transient WorkoutDao myDao;
     @Generated(hash = 1492005445)
     private transient Long forBodyPart__resolvedKey;
 
-    @Generated(hash = 1152608144)
-    public RoutineItem(Long routineItemId, @NotNull String name, int standardNumberOfRepetitions,
-                       boolean countRepetitionsInReverse, int standardNumberOfSets, int duration,
-                       boolean countDurationInReverse, int timeToGetInPosition, int restTimeAfterExercise,
-                       long bodyPartId, RoutineItemType routineItemType) {
-        this.routineItemId = routineItemId;
+    @Generated(hash = 1117692692)
+    public Workout(Long workoutId, @NotNull String name, int standardNumberOfRepetitions, boolean countRepetitionsInReverse, int standardNumberOfSets, int duration,
+                   boolean countDurationInReverse, int timeToGetInPosition, int restTimeAfterExercise, long bodyPartId) {
+        this.workoutId = workoutId;
         this.name = name;
         this.standardNumberOfRepetitions = standardNumberOfRepetitions;
         this.countRepetitionsInReverse = countRepetitionsInReverse;
@@ -64,19 +63,39 @@ public class RoutineItem {
         this.timeToGetInPosition = timeToGetInPosition;
         this.restTimeAfterExercise = restTimeAfterExercise;
         this.bodyPartId = bodyPartId;
-        this.routineItemType = routineItemType;
     }
 
-    @Generated(hash = 409773735)
-    public RoutineItem() {
+    @Generated(hash = 570607860)
+    public Workout() {
     }
 
-    public Long getRoutineItemId() {
-        return this.routineItemId;
+    public Workout copy() {  //creating copy to resolve disappearing drag drop item issue in RoutingActivity
+
+        Workout workout = new Workout();
+
+        Random random = new Random();
+        workout.workoutId = random.nextLong(); //assigning random ID to resolve disappearing drag drop item issue in RoutingActivity
+
+        workout.name = this.name;
+        workout.bodyPartId = this.bodyPartId;
+        workout.standardNumberOfRepetitions = this.standardNumberOfRepetitions;
+        workout.standardNumberOfSets = this.standardNumberOfSets;
+        workout.duration = this.duration;
+        workout.countDurationInReverse = this.countDurationInReverse;
+        workout.countRepetitionsInReverse = this.countRepetitionsInReverse;
+        workout.duration = this.duration;
+        workout.timeToGetInPosition = this.timeToGetInPosition;
+        workout.restTimeAfterExercise = this.restTimeAfterExercise;
+
+        return workout;
     }
 
-    public void setRoutineItemId(Long routineItemId) {
-        this.routineItemId = routineItemId;
+    public Long getWorkoutId() {
+        return this.workoutId;
+    }
+
+    public void setWorkoutId(Long workoutId) {
+        this.workoutId = workoutId;
     }
 
     public String getName() {
@@ -143,14 +162,6 @@ public class RoutineItem {
         this.restTimeAfterExercise = restTimeAfterExercise;
     }
 
-    public RoutineItemType getRoutineItemType() {
-        return this.routineItemType;
-    }
-
-    public void setRoutineItemType(RoutineItemType routineItemType) {
-        this.routineItemType = routineItemType;
-    }
-
     public long getBodyPartId() {
         return this.bodyPartId;
     }
@@ -159,9 +170,12 @@ public class RoutineItem {
         this.bodyPartId = bodyPartId;
     }
 
-    /**
-     * To-one relationship, resolved on first access.
-     */
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    /** To-one relationship, resolved on first access. */
     @Generated(hash = 623521386)
     public BodyPart getForBodyPart() {
         long __key = this.bodyPartId;
@@ -180,14 +194,11 @@ public class RoutineItem {
         return forBodyPart;
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1004443887)
     public void setForBodyPart(@NotNull BodyPart forBodyPart) {
         if (forBodyPart == null) {
-            throw new DaoException(
-                    "To-one property 'bodyPartId' has not-null constraint; cannot set to-one to null");
+            throw new DaoException("To-one property 'bodyPartId' has not-null constraint; cannot set to-one to null");
         }
         synchronized (this) {
             this.forBodyPart = forBodyPart;
@@ -232,33 +243,14 @@ public class RoutineItem {
         myDao.update(this);
     }
 
-    enum RoutineItemType {
-        REST, EXERCISE
-    }
-
-    static class RoutineItemTypeConverter implements PropertyConverter<RoutineItemType, String> {
-        @Override
-        public RoutineItemType convertToEntityProperty(String databaseValue) {
-            return RoutineItemType.valueOf(databaseValue);
-        }
-
-        @Override
-        public String convertToDatabaseValue(RoutineItemType entityProperty) {
-            return entityProperty.name();
-        }
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
     /**
      * called by internal mechanisms, do not call yourself.
      */
-    @Generated(hash = 1593055851)
+    @Generated(hash = 1398188052)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getRoutineItemDao() : null;
+        myDao = daoSession != null ? daoSession.getWorkoutDao() : null;
     }
+
+
 }

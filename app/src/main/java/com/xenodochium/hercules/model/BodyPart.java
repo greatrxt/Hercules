@@ -5,8 +5,12 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 
+import java.io.Serializable;
+
 @Entity
-public class BodyPart {
+public class BodyPart implements Serializable { //implementing serializable so that it could be passed from one activity to another using intent serializable extras
+
+    static final long serialVersionUID = 83743848;
 
     @Id
     private Long bodyPartId;

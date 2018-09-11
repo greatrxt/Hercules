@@ -11,8 +11,8 @@
     <string name="count_in_reverse">Count In Reverse</string>
     <string name="duration">Duration ( In Seconds )</string>
     <string name="time_to_get_in_position">Time To Get In Position ( In Seconds )</string>
-    <string name="rest_time_after_exercise">Rest Time After Exercise ( In Seconds )</string>
-    <string name="new_exercise">New Exercise</string>
+    <string name="rest_time_after_set">Rest Time After Each Set ( In Seconds )</string>
+    <string name="new_workout">New Workout</string>
     <string name="cannot_be_empty">Cannot Be Empty</string>
     <string name="new_routine">New Routine</string>
     <string name="add_new_body_part">Add New Body Part</string>
@@ -21,4 +21,9 @@
     <string name="add_body_part">Add All Workouts For A Body Part</string>
     <string name="add_rest">Add Rest</string>
     <string name="add_time_gap">Add Time Gap</string>
+    <string name="toast_workout_added"><![CDATA[Long Press To Drag & Drop]]></string>
+    <string name="edit_workout">Edit Workout</string>
+    <string name="routine_activity_instructions">1) Tap To Edit \n2) Drag Drop To Change Order \n3) Swipe Left Or Right To Delete</string>
+    <string name="edit_body_part_name">Edit Body Part</string>
+    <string name="edit_routine">Edit Routine</string>
 </resources>

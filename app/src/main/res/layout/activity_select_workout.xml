@@ -5,19 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".ui.SelectRoutineItemActivity">
+    tools:context=".ui.SelectWorkoutActivity">
 
     <ListView
-        android:id="@+id/list_view_routine_items"
+        android:id="@+id/list_view_workouts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linear_layout_buttons_add_routine_items"
+        android:layout_above="@+id/linear_layout_buttons_add_workouts"
         android:layout_alignParentTop="true">
 
     </ListView>
 
     <LinearLayout
-        android:id="@+id/linear_layout_buttons_add_routine_items"
+        android:id="@+id/linear_layout_buttons_add_workouts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

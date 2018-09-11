@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -14,8 +15,6 @@ import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.Routine;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemTwoFragment extends Fragment implements View.OnClickListener {
@@ -40,14 +39,22 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener {
         populateRoutineListView();
     }
 
+    /**
+     * Populate routines
+     */
     public void populateRoutineListView() {
-        Iterator<Routine> routineItemList = Hercules.getInstance().getDaoSession().getRoutineDao().loadAll().iterator();
-        List<String> routineList = new ArrayList<>();
-        while (routineItemList.hasNext()) {
-            routineList.add(routineItemList.next().getName());
-        }
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, routineList);
+        List<Routine> routineList = Hercules.getInstance().getDaoSession().getRoutineDao().loadAll();
+        ArrayAdapter<Routine> dataAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, routineList);
         listViewRoutine.setAdapter(dataAdapter);
+        listViewRoutine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Routine routine = ((Routine) adapterView.getItemAtPosition(position));
+                Intent intent = new Intent(getActivity(), RoutineActivity.class);
+                intent.putExtra("routineId", routine.getRoutineId());
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -18,10 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ExerciseActivity" />
+        <activity android:name=".ui.WorkoutActivity" />
         <activity android:name=".ui.PlayerActivity" />
         <activity android:name=".ui.RoutineActivity" />
-        <activity android:name=".ui.SelectRoutineItemActivity"></activity>
+        <activity android:name=".ui.SelectWorkoutActivity"></activity>
     </application>
 
 </manifest>

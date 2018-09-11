@@ -4,9 +4,11 @@
     android:id="@+id/grab_handle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
     app:leftViewId="@+id/item_left"
     app:rightViewId="@+id/item_right"
     app:swipeViewId="@+id/item_layout">
+
 
     <TextView
         android:id="@+id/item_left"
@@ -38,19 +40,32 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="5dp">
+        android:padding="1dp">
 
-        <ImageView
-            android:id="@+id/image_view_handle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/ic_workout_limegreen" />
+        <TextView
+            android:id="@+id/text_view_exercise_order"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="60"
+            android:textSize="@dimen/drag_drop_list_item_font_size" />
 
         <TextView
             android:id="@+id/text_view_exercise_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="40"
+            android:textSize="@dimen/drag_drop_list_item_font_size" />
+
+        <TextView
+            android:id="@+id/text_view_exercise_sets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="30"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp" />
 
     </LinearLayout>
 

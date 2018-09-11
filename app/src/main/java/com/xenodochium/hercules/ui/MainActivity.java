@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         if (selectedFragment instanceof ItemOneFragment) {
             ((ItemOneFragment) selectedFragment).populateExerciseListView();
         } else if (selectedFragment instanceof ItemTwoFragment) {
-
+            ((ItemTwoFragment) selectedFragment).populateRoutineListView();
         } else if (selectedFragment instanceof ItemThreeFragment) {
 
         }

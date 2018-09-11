@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.BodyPart;
-import com.xenodochium.hercules.model.RoutineItem;
+import com.xenodochium.hercules.model.Workout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,37 +26,66 @@ import java.util.TreeMap;
 public class MultiSelectArrayAdapter extends BaseAdapter {
 
     Context context;
-    List<RoutineItem> routineItems;
-    TreeMap<String, List> bodyPartWiseRoutineItems;
+    List<Workout> workouts;
+    TreeMap<String, List> bodyPartWiseWorkouts;
     HashMap<Integer, View> viewList;
 
-    public MultiSelectArrayAdapter(@NonNull Context context, List<RoutineItem> routineItems) {
+    public MultiSelectArrayAdapter(@NonNull Context context, List<Workout> workouts) {
         this.context = context;
-        this.routineItems = routineItems;
-        bodyPartWiseRoutineItems = new TreeMap<>();
+        this.workouts = workouts;
+        bodyPartWiseWorkouts = new TreeMap<>();
         viewList = new HashMap<>();
-        Iterator<RoutineItem> routineItemIterator = this.routineItems.iterator();
-        while (routineItemIterator.hasNext()) {
-            RoutineItem routineItem = routineItemIterator.next();
-            BodyPart bodyPart = Hercules.getInstance().getDaoSession().getBodyPartDao().load(routineItem.getBodyPartId());
-            if (!bodyPartWiseRoutineItems.containsKey(bodyPart.getName())) {
-                bodyPartWiseRoutineItems.put(bodyPart.getName(), new ArrayList());
+        Iterator<Workout> workoutIterator = this.workouts.iterator();
+        while (workoutIterator.hasNext()) {
+            Workout workout = workoutIterator.next();
+            BodyPart bodyPart = Hercules.getInstance().getDaoSession().getBodyPartDao().load(workout.getBodyPartId());
+            if (!bodyPartWiseWorkouts.containsKey(bodyPart.getName())) {
+                bodyPartWiseWorkouts.put(bodyPart.getName(), new ArrayList());
             }
 
-            List routineItemsForBodyPartList = bodyPartWiseRoutineItems.get(bodyPart.getName());
-            routineItemsForBodyPartList.add(routineItem);
+            List workoutsForBodyPartList = bodyPartWiseWorkouts.get(bodyPart.getName());
+            workoutsForBodyPartList.add(workout);
         }
     }
 
-    @Override
-    public int getCount() {
-        return routineItems.size() + bodyPartWiseRoutineItems.keySet().size();
+    /**
+     * Returns a list of all routine items selected by user
+     *
+     * @return
+     */
+    public List<Workout> getSelectedItems() {
+        List<Workout> selectedWorkouts = new ArrayList<>();
+        for (int m = 0; m < getCount(); m++) {
+            if (getItem(m) instanceof Workout) {
+                LinearLayout ll = (LinearLayout) viewList.get(m);
+                if (((CheckBox) ll.findViewById(R.id.checkbox_selectable_item)).isChecked()) {
+                    selectedWorkouts.add(((Workout) getItem(m)).copy());
+                }
+            }
+        }
+
+        return selectedWorkouts;
     }
 
+    /**
+     * Return sum of size of routine items and the headers
+     *
+     * @return
+     */
+    @Override
+    public int getCount() {
+        return workouts.size() + bodyPartWiseWorkouts.keySet().size();
+    }
+
+    /**
+     * If position corresponds to header then return header else return item
+     * @param position
+     * @return
+     */
     @Override
     public Object getItem(int position) {
         int counter = -1;
-        Iterator<String> bodyPartsNameIterator = bodyPartWiseRoutineItems.keySet().iterator();
+        Iterator<String> bodyPartsNameIterator = bodyPartWiseWorkouts.keySet().iterator();
         while (bodyPartsNameIterator.hasNext()) {
             counter++;
             String bodyPartName = bodyPartsNameIterator.next();
@@ -65,11 +94,11 @@ public class MultiSelectArrayAdapter extends BaseAdapter {
                 return bodyPartName;
             }
 
-            List<RoutineItem> routineItems = bodyPartWiseRoutineItems.get(bodyPartName);
-            for (int r = 0; r < routineItems.size(); r++) {
+            List<Workout> workouts = bodyPartWiseWorkouts.get(bodyPartName);
+            for (int r = 0; r < workouts.size(); r++) {
                 counter++;
                 if (counter == position) {
-                    return routineItems.get(r);
+                    return workouts.get(r);
                 }
             }
         }
@@ -79,9 +108,16 @@ public class MultiSelectArrayAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int i) {
-        return routineItems.get(i).getRoutineItemId();
+        return workouts.get(i).getWorkoutId();
     }
 
+    /**
+     * If position corresponds to header then return header view else return item view
+     * @param position
+     * @param view
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
@@ -90,7 +126,7 @@ public class MultiSelectArrayAdapter extends BaseAdapter {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             int counter = -1;
-            Iterator<String> bodyPartsNameIterator = bodyPartWiseRoutineItems.keySet().iterator();
+            Iterator<String> bodyPartsNameIterator = bodyPartWiseWorkouts.keySet().iterator();
             while (bodyPartsNameIterator.hasNext()) {
                 counter++;
                 final String bodyPartName = bodyPartsNameIterator.next();
@@ -101,20 +137,23 @@ public class MultiSelectArrayAdapter extends BaseAdapter {
                     textView.setText(bodyPartName);
                     CheckBox checkBox = view.findViewById(R.id.checkbox_selectable_group);
                     checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                        //check all items for the body part if the header is selected
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                             //check all items of this body part
                             for (int m = 0; m < getCount(); m++) {
-                                if (getItem(m) instanceof RoutineItem) {
-                                    RoutineItem routineItem = (RoutineItem) getItem(m);
-                                    BodyPart bodyPart = Hercules.getInstance().getDaoSession().getBodyPartDao().load(routineItem.getBodyPartId());
+                                if (getItem(m) instanceof Workout) {
+                                    Workout workout = (Workout) getItem(m);
+                                    BodyPart bodyPart = Hercules.getInstance().getDaoSession().getBodyPartDao().load(workout.getBodyPartId());
                                     if (bodyPart.getName().equals(bodyPartName)) {
                                         LinearLayout ll = (LinearLayout) viewList.get(m);
-                                        for (int l = 0; l < ll.getChildCount(); l++) {
+                                        ((CheckBox) ll.findViewById(R.id.checkbox_selectable_item)).setChecked(isChecked);
+                                        /*for (int l = 0; l < ll.getChildCount(); l++) {
                                             if (ll.getChildAt(l) instanceof CheckBox) {
                                                 ((CheckBox) ll.getChildAt(l)).setChecked(isChecked);
                                             }
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -124,14 +163,14 @@ public class MultiSelectArrayAdapter extends BaseAdapter {
                     break;
                 }
 
-                List<RoutineItem> routineItems = bodyPartWiseRoutineItems.get(bodyPartName);
-                for (int r = 0; r < routineItems.size(); r++) {
+                List<Workout> workouts = bodyPartWiseWorkouts.get(bodyPartName);
+                for (int r = 0; r < workouts.size(); r++) {
                     counter++;
                     if (counter == position) {
                         //add item
                         view = layoutInflater.inflate(R.layout.multiselect_list_item, null);
                         TextView textView = view.findViewById(R.id.text_view_selectable_item_label);
-                        textView.setText(routineItems.get(r).getName());
+                        textView.setText(workouts.get(r).getName());
                         CheckBox checkBox = view.findViewById(R.id.checkbox_selectable_item);
                         break;
                     }

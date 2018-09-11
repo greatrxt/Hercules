@@ -1,14 +1,14 @@
 package com.xenodochium.hercules.ui;
 
 import android.os.Bundle;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.widget.Toast;
 
 import com.woxthebox.draglistview.DragListView;
 import com.xenodochium.hercules.R;
-import com.xenodochium.hercules.adapter.DragAndDropItemAdapter;
+import com.xenodochium.hercules.adapter.DragAndDropRoutineItemAdapter;
+import com.xenodochium.hercules.model.Workout;
 
 import java.util.ArrayList;
 
@@ -39,12 +39,9 @@ public class PlayerActivity extends AppCompatActivity {
 
         mDragListView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-        ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
-        mItemArray.add(new Pair<Long, String>((long) 1, "abcd"));
-        mItemArray.add(new Pair<Long, String>((long) 2, "efgh"));
-        mItemArray.add(new Pair<Long, String>((long) 3, "ijkl"));
+        ArrayList<Workout> mItemArray = new ArrayList<>();
 
-        DragAndDropItemAdapter listAdapter = new DragAndDropItemAdapter(mItemArray, R.layout.list_item, R.id.image, true);
+        DragAndDropRoutineItemAdapter listAdapter = new DragAndDropRoutineItemAdapter(getApplicationContext(), mItemArray, R.layout.drag_view_list_item, R.id.image, true);
         mDragListView.setAdapter(listAdapter, true);
         mDragListView.setCanDragHorizontally(false);
     }

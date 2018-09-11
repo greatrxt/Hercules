@@ -12,15 +12,16 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.BodyPart;
-import com.xenodochium.hercules.model.RoutineItem;
+import com.xenodochium.hercules.model.Workout;
 
 import java.util.List;
 
-public class ExerciseActivity extends AppCompatActivity implements View.OnClickListener {
+public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextInputLayout tilExerciseName, tilNumberOfSets, tilNumberOfRepetitions, tilDuration, tilTimeToGetInPosition, tilRestTimeAfterExercise;
     CheckBox checkboxCountRepetitionsInReverse, checkboxCountDurationInReverse;
@@ -30,8 +31,9 @@ public class ExerciseActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exercise);
-        getSupportActionBar().hide();
+        setContentView(R.layout.activity_workout);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().hide();
         initializeViews();
         populateViews();
     }
@@ -41,21 +43,23 @@ public class ExerciseActivity extends AppCompatActivity implements View.OnClickL
      */
     private void populateViews() {
         if (getIntent().getExtras() != null) {
-            RoutineItem routineItem = Hercules.getInstance().getDaoSession().getRoutineItemDao().load((Long) getIntent().getExtras().get("routineItemId"));
-            tilExerciseName.getEditText().setText(routineItem.getName());
-            tilNumberOfSets.getEditText().setText(String.valueOf(routineItem.getStandardNumberOfSets()));
-            tilNumberOfRepetitions.getEditText().setText(String.valueOf(routineItem.getStandardNumberOfRepetitions()));
-            tilDuration.getEditText().setText(String.valueOf(routineItem.getDuration()));
-            tilTimeToGetInPosition.getEditText().setText(String.valueOf(routineItem.getTimeToGetInPosition()));
-            tilRestTimeAfterExercise.getEditText().setText(String.valueOf(routineItem.getRestTimeAfterExercise()));
-            checkboxCountRepetitionsInReverse.setChecked(routineItem.getCountDurationInReverse());
-            checkboxCountDurationInReverse.setChecked(routineItem.getCountDurationInReverse());
+            Workout workout = Hercules.getInstance().getDaoSession().getWorkoutDao().load((Long) getIntent().getExtras().get("workoutId"));
+            tilExerciseName.getEditText().setText(workout.getName());
+            tilNumberOfSets.getEditText().setText(String.valueOf(workout.getStandardNumberOfSets()));
+            tilNumberOfRepetitions.getEditText().setText(String.valueOf(workout.getStandardNumberOfRepetitions()));
+            tilDuration.getEditText().setText(String.valueOf(workout.getDuration()));
+            tilTimeToGetInPosition.getEditText().setText(String.valueOf(workout.getTimeToGetInPosition()));
+            tilRestTimeAfterExercise.getEditText().setText(String.valueOf(workout.getRestTimeAfterExercise()));
+            checkboxCountRepetitionsInReverse.setChecked(workout.getCountDurationInReverse());
+            checkboxCountDurationInReverse.setChecked(workout.getCountDurationInReverse());
             SpinnerAdapter spinnerAdapter = spinnerBodyPart.getAdapter();
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
-                if (((BodyPart) spinnerAdapter.getItem(i)).getBodyPartId() == routineItem.getBodyPartId()) {
+                if (((BodyPart) spinnerAdapter.getItem(i)).getBodyPartId() == workout.getBodyPartId()) {
                     spinnerBodyPart.setSelection(i);
                 }
             }
+
+            ((TextView) findViewById(R.id.text_view_label_workout)).setText(getString(R.string.edit_workout));
 
             //don't show keyboard
             getWindow().setSoftInputMode(WindowManager.
@@ -85,15 +89,9 @@ public class ExerciseActivity extends AppCompatActivity implements View.OnClickL
         buttonCancel.setOnClickListener(this);
         buttonOk.setOnClickListener(this);
 
-        // Spinner Drop down elements
         List<BodyPart> bodyPartsNameList = Hercules.getInstance().getDaoSession().getBodyPartDao().loadAll();
-        // Creating adapter for spinner
         ArrayAdapter<BodyPart> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, bodyPartsNameList);
-
-        // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // attaching data adapter to spinner
         spinnerBodyPart.setAdapter(dataAdapter);
     }
 
@@ -135,23 +133,23 @@ public class ExerciseActivity extends AppCompatActivity implements View.OnClickL
      * Save exercise data
      */
     private void saveExerciseData() {
-        RoutineItem routineItem = new RoutineItem();
-        routineItem.setName(tilExerciseName.getEditText().getText().toString());
-        routineItem.setStandardNumberOfSets(Integer.parseInt(tilNumberOfSets.getEditText().getText().toString()));
-        routineItem.setStandardNumberOfRepetitions(Integer.parseInt(tilNumberOfRepetitions.getEditText().getText().toString()));
-        routineItem.setCountRepetitionsInReverse(checkboxCountRepetitionsInReverse.isChecked());
-        routineItem.setDuration(Integer.parseInt(tilDuration.getEditText().getText().toString()));
-        routineItem.setCountDurationInReverse(checkboxCountDurationInReverse.isChecked());
-        routineItem.setTimeToGetInPosition(Integer.parseInt(tilTimeToGetInPosition.getEditText().getText().toString()));
-        routineItem.setRestTimeAfterExercise(Integer.parseInt(tilRestTimeAfterExercise.getEditText().getText().toString()));
-        routineItem.setBodyPartId(((BodyPart) spinnerBodyPart.getSelectedItem()).getBodyPartId());
+        Workout workout = new Workout();
+        workout.setName(tilExerciseName.getEditText().getText().toString());
+        workout.setStandardNumberOfSets(Integer.parseInt(tilNumberOfSets.getEditText().getText().toString()));
+        workout.setStandardNumberOfRepetitions(Integer.parseInt(tilNumberOfRepetitions.getEditText().getText().toString()));
+        workout.setCountRepetitionsInReverse(checkboxCountRepetitionsInReverse.isChecked());
+        workout.setDuration(Integer.parseInt(tilDuration.getEditText().getText().toString()));
+        workout.setCountDurationInReverse(checkboxCountDurationInReverse.isChecked());
+        workout.setTimeToGetInPosition(Integer.parseInt(tilTimeToGetInPosition.getEditText().getText().toString()));
+        workout.setRestTimeAfterExercise(Integer.parseInt(tilRestTimeAfterExercise.getEditText().getText().toString()));
+        workout.setBodyPartId(((BodyPart) spinnerBodyPart.getSelectedItem()).getBodyPartId());
 
         if (getIntent().getExtras() != null) {
-            routineItem.setRoutineItemId((Long) getIntent().getExtras().get("routineItemId"));
+            workout.setWorkoutId((Long) getIntent().getExtras().get("workoutId"));
         }
 
-        Hercules.getInstance().getDaoSession().getRoutineItemDao().insertOrReplace(routineItem);
-        Log.d(ExerciseActivity.class.getSimpleName(), "Saved " + routineItem.getRoutineItemId());
+        Hercules.getInstance().getDaoSession().getWorkoutDao().insertOrReplace(workout);
+        Log.d(WorkoutActivity.class.getSimpleName(), "Saved " + workout.getWorkoutId());
         finish();
     }
 }
