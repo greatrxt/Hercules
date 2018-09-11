@@ -5,6 +5,7 @@ import android.app.Application;
 import com.xenodochium.hercules.model.BodyPart;
 import com.xenodochium.hercules.model.DaoMaster;
 import com.xenodochium.hercules.model.DaoSession;
+import com.xenodochium.hercules.speech.HerculesSpeechEngine;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -36,6 +37,7 @@ public class Hercules extends Application {
 
         daoSession = new DaoMaster(db).newSession();
         insertBasicData();
+        HerculesSpeechEngine.findVoice();
     }
 
     public DaoSession getDaoSession() {

@@ -2,6 +2,7 @@ package com.xenodochium.hercules.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.Voice;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,13 +15,17 @@ import android.widget.ListView;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.Routine;
+import com.xenodochium.hercules.speech.HerculesSpeechEngine;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class ItemTwoFragment extends Fragment implements View.OnClickListener {
     private ListView listViewRoutine;
     private View fragmentView;
     private FloatingActionButton buttonAddRoutine;
+
+    int i = 0;
 
     public static ItemTwoFragment newInstance() {
         ItemTwoFragment fragment = new ItemTwoFragment();
@@ -32,12 +37,7 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
     }
 
-    private void initializeViews() {
-        listViewRoutine = fragmentView.findViewById(R.id.list_view_routine);
-        buttonAddRoutine = fragmentView.findViewById(R.id.button_add_routine);
-        buttonAddRoutine.setOnClickListener(this);
-        populateRoutineListView();
-    }
+    private Iterator<Voice> voices;
 
     /**
      * Populate routines
@@ -65,11 +65,21 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener {
         return fragmentView;
     }
 
+    private void initializeViews() {
+        listViewRoutine = fragmentView.findViewById(R.id.list_view_routine);
+        buttonAddRoutine = fragmentView.findViewById(R.id.button_add_routine);
+        buttonAddRoutine.setOnClickListener(this);
+        populateRoutineListView();
+
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_add_routine:
-                startActivity(new Intent(getActivity(), RoutineActivity.class));
+                //startActivity(new Intent(getActivity(), RoutineActivity.class));
+                HerculesSpeechEngine.speak("Hi there... I am Hercules, your virtual gym trainer.");
+                HerculesSpeechEngine.speak("I am ready");
                 break;
         }
     }
