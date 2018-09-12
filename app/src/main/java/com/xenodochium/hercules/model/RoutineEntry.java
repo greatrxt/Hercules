@@ -9,8 +9,15 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.converter.PropertyConverter;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 @Entity
-public class RoutineEntry {
+public class RoutineEntry implements Serializable {
+
+    static final long serialVersionUID = 259600321;
 
     @Id
     private Long routineEntryId;
@@ -46,6 +53,38 @@ public class RoutineEntry {
 
     @Convert(converter = RoutineEntryTypeConvertor.class, columnType = String.class)
     private RoutineEntryType routineEntryType;
+
+    /**
+     * Convert workout object to routine entry.
+     *
+     * @param workout
+     * @return
+     */
+    public static RoutineEntry convertWorkoutToRoutineEntry(Long routineId, Workout workout) {
+        RoutineEntry routineEntry = new RoutineEntry();
+        if (routineId != null) routineEntry.setRoutineId(routineId);
+        routineEntry.setRoutineEntryId(workout.getWorkoutId());
+        routineEntry.setRoutineEntryType(RoutineEntry.RoutineEntryType.WORKOUT);
+        routineEntry.setName(workout.getName());
+        routineEntry.setBodyPartId(workout.getBodyPartId());
+        routineEntry.setStandardNumberOfRepetitions(workout.getStandardNumberOfRepetitions());
+        routineEntry.setStandardNumberOfSets(workout.getStandardNumberOfSets());
+        routineEntry.setDuration(workout.getDuration());
+        routineEntry.setCountDurationInReverse(workout.getCountDurationInReverse());
+        routineEntry.setCountRepetitionsInReverse(workout.getCountRepetitionsInReverse());
+        routineEntry.setTimeToGetInPosition(workout.getTimeToGetInPosition());
+        routineEntry.setRestTimeAfterExercise(workout.getRestTimeAfterExercise());
+        return routineEntry;
+    }
+
+    public static List<RoutineEntry> convertWorkoutListToRoutineEntryList(Long routineId, List<Workout> workoutList) {
+        List<RoutineEntry> routineEntryList = new ArrayList<>();
+        Iterator<Workout> workoutIterator = workoutList.iterator();
+        while (workoutIterator.hasNext()) {
+            routineEntryList.add(convertWorkoutToRoutineEntry(routineId, workoutIterator.next()));
+        }
+        return routineEntryList;
+    }
     /**
      * Used to resolve relations
      */
@@ -300,9 +339,7 @@ public class RoutineEntry {
         this.routineEntryType = routineEntryType;
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1215879219)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

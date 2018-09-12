@@ -1,7 +1,9 @@
-package com.xenodochium.hercules.speech;
+package com.xenodochium.hercules.engine;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 
 import com.xenodochium.hercules.application.Hercules;
@@ -76,5 +78,18 @@ public class HerculesSpeechEngine {
         };
 
         AsyncTask.execute(runnable); //running in background so that app does not freeze when while loop for tts.isSpeaking is going on
+    }
+
+
+    /**
+     * @param text
+     * @param utteranceProgressListener
+     */
+    public static void speak(String text, UtteranceProgressListener utteranceProgressListener) {
+        tts.setOnUtteranceProgressListener(utteranceProgressListener);
+
+        Bundle params = new Bundle();
+        params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "");
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "UniqueId");
     }
 }

@@ -1,31 +1,28 @@
 package com.xenodochium.hercules.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.speech.tts.Voice;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.xenodochium.hercules.R;
+import com.xenodochium.hercules.adapter.StandardHomeListItemAdapter;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.Routine;
-import com.xenodochium.hercules.speech.HerculesSpeechEngine;
 
-import java.util.Iterator;
+import java.io.Serializable;
 import java.util.List;
 
-public class ItemTwoFragment extends Fragment implements View.OnClickListener {
+public class ItemTwoFragment extends Fragment implements View.OnClickListener, StandardHomeListItemAdapter.OnItemClickListener {
     private ListView listViewRoutine;
     private View fragmentView;
     private FloatingActionButton buttonAddRoutine;
-
-    int i = 0;
 
     public static ItemTwoFragment newInstance() {
         ItemTwoFragment fragment = new ItemTwoFragment();
@@ -37,24 +34,13 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
     }
 
-    private Iterator<Voice> voices;
-
     /**
      * Populate routines
      */
     public void populateRoutineListView() {
         List<Routine> routineList = Hercules.getInstance().getDaoSession().getRoutineDao().loadAll();
-        ArrayAdapter<Routine> dataAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, routineList);
+        StandardHomeListItemAdapter<Routine> dataAdapter = new StandardHomeListItemAdapter<>(this, routineList);
         listViewRoutine.setAdapter(dataAdapter);
-        listViewRoutine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Routine routine = ((Routine) adapterView.getItemAtPosition(position));
-                Intent intent = new Intent(getActivity(), RoutineActivity.class);
-                intent.putExtra("routineId", routine.getRoutineId());
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -77,10 +63,44 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_add_routine:
-                //startActivity(new Intent(getActivity(), RoutineActivity.class));
-                HerculesSpeechEngine.speak("Hi there... I am Hercules, your virtual gym trainer.");
-                HerculesSpeechEngine.speak("I am ready");
+                startActivity(new Intent(getActivity(), RoutineActivity.class));
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(Object selectedItem) {
+        Routine routine = ((Routine) selectedItem);
+        Intent intent = new Intent(getActivity(), RoutineActivity.class);
+        intent.putExtra("routineId", routine.getRoutineId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onItemPlay(Object selectedItem) {
+        Routine routine = (Routine) selectedItem;
+        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("workoutList", (Serializable) routine.getLinkedRoutineEntries());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onItemDelete(final Object selectedItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.delete) + " Routine ?")
+                .setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_item))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Hercules.getInstance().getDaoSession().getRoutineDao().delete((Routine) selectedItem);
+                        populateRoutineListView();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                //.setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

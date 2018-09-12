@@ -26,4 +26,6 @@
     <string name="routine_activity_instructions">1) Tap To Edit \n2) Drag Drop To Change Order \n3) Swipe Left Or Right To Delete</string>
     <string name="edit_body_part_name">Edit Body Part</string>
     <string name="edit_routine">Edit Routine</string>
+    <string name="delete">Delete</string>
+    <string name="are_you_sure_you_want_to_delete_this_item">Are you sure you want to delete this item ?</string>
 </resources>

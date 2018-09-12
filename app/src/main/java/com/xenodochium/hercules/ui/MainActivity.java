@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Fragment selectedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
         if (selectedFragment instanceof ItemOneFragment) {
-            ((ItemOneFragment) selectedFragment).populateExerciseListView();
+            ((ItemOneFragment) selectedFragment).populateWorkoutListView();
         } else if (selectedFragment instanceof ItemTwoFragment) {
             ((ItemTwoFragment) selectedFragment).populateRoutineListView();
         } else if (selectedFragment instanceof ItemThreeFragment) {

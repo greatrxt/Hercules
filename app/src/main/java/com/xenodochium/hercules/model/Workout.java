@@ -8,6 +8,9 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 @Entity
@@ -34,6 +37,38 @@ public class Workout implements Serializable { //implementing serializable so th
     private int restTimeAfterExercise;
 
     private long bodyPartId;
+
+    /**
+     * @param routineEntry
+     * @return
+     */
+    public static Workout convertRoutineEntryToWorkout(RoutineEntry routineEntry) {
+        Workout workout = new Workout();
+        workout.setWorkoutId(routineEntry.getRoutineEntryId());
+        workout.setName(routineEntry.getName());
+        workout.setBodyPartId(routineEntry.getBodyPartId());
+        workout.setStandardNumberOfRepetitions(routineEntry.getStandardNumberOfRepetitions());
+        workout.setStandardNumberOfSets(routineEntry.getStandardNumberOfSets());
+        workout.setDuration(routineEntry.getDuration());
+        workout.setCountDurationInReverse(routineEntry.getCountDurationInReverse());
+        workout.setCountRepetitionsInReverse(routineEntry.getCountRepetitionsInReverse());
+        workout.setTimeToGetInPosition(routineEntry.getTimeToGetInPosition());
+        workout.setRestTimeAfterExercise(routineEntry.getRestTimeAfterExercise());
+        return workout;
+    }
+
+    /**
+     * @param routineEntryList
+     * @return
+     */
+    public static List<Workout> convertRoutineEntryListToWorkoutList(List<RoutineEntry> routineEntryList) {
+        List<Workout> workoutList = new ArrayList<>();
+        Iterator<RoutineEntry> routineEntryIterator = routineEntryList.iterator();
+        while (routineEntryIterator.hasNext()) {
+            workoutList.add(convertRoutineEntryToWorkout(routineEntryIterator.next()));
+        }
+        return workoutList;
+    }
 
     @ToOne(joinProperty = "bodyPartId")
     private BodyPart forBodyPart;
@@ -243,9 +278,7 @@ public class Workout implements Serializable { //implementing serializable so th
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1398188052)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

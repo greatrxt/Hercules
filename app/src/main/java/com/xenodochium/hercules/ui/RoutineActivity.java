@@ -18,7 +18,7 @@ import com.woxthebox.draglistview.DragListView;
 import com.woxthebox.draglistview.swipe.ListSwipeHelper;
 import com.woxthebox.draglistview.swipe.ListSwipeItem;
 import com.xenodochium.hercules.R;
-import com.xenodochium.hercules.adapter.DragAndDropRoutineItemAdapter;
+import com.xenodochium.hercules.adapter.DragAndDropRoutineEntryItemAdapter;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.Routine;
 import com.xenodochium.hercules.model.RoutineEntry;
@@ -64,7 +64,7 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
         mDragListView.setDragListListener(new DragListView.DragListListener() {
             @Override
             public void onItemDragStarted(int position) {
-                Toast.makeText(getApplicationContext(), "Moving " + ((Workout) mDragListView.getAdapter().getItemList().get(position)).getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Moving " + ((RoutineEntry) mDragListView.getAdapter().getItemList().get(position)).getName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -75,7 +75,7 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onItemDragEnded(int fromPosition, int toPosition) {
                 if (fromPosition != toPosition) {
-                    Toast.makeText(getApplicationContext(), "Moved  " + ((Workout) mDragListView.getAdapter().getItemList().get(toPosition)).getName()
+                    Toast.makeText(getApplicationContext(), "Moved  " + ((RoutineEntry) mDragListView.getAdapter().getItemList().get(toPosition)).getName()
                             + " From " + (fromPosition + 1) + " To " + (toPosition + 1), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -86,28 +86,8 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
         if (getIntent().getExtras() != null) {
             Routine routine = Hercules.getInstance().getDaoSession().getRoutineDao().load((Long) getIntent().getExtras().get("routineId"));
             tilRoutineName.getEditText().setText(routine.getName());
-            Iterator<RoutineEntry> routineEntryList = routine.getLinkedRoutineEntries().iterator();
-            List<Workout> workoutList = new ArrayList<>();
-            while (routineEntryList.hasNext()) {
-                RoutineEntry routineEntry = routineEntryList.next();
-
-                Workout workout = new Workout();
-                workout.setWorkoutId(routineEntry.getRoutineEntryId());
-                workout.setName(routineEntry.getName());
-                workout.setBodyPartId(routineEntry.getBodyPartId());
-                workout.setStandardNumberOfRepetitions(routineEntry.getStandardNumberOfRepetitions());
-                workout.setStandardNumberOfSets(routineEntry.getStandardNumberOfSets());
-                workout.setDuration(routineEntry.getDuration());
-                workout.setCountDurationInReverse(routineEntry.getCountDurationInReverse());
-                workout.setCountRepetitionsInReverse(routineEntry.getCountRepetitionsInReverse());
-                workout.setTimeToGetInPosition(routineEntry.getTimeToGetInPosition());
-                workout.setRestTimeAfterExercise(routineEntry.getRestTimeAfterExercise());
-                workoutList.add(workout);
-            }
-
-            populateDragListView(workoutList);
+            populateDragListView(routine.getLinkedRoutineEntries());
             ((TextView) findViewById(R.id.text_view_create_routine)).setText(getString(R.string.edit_routine));
-
             //don't show keyboard
             getWindow().setSoftInputMode(WindowManager.
                     LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -118,10 +98,10 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
     /**
      * Populate drag and drop list
      *
-     * @param workoutList
+     * @param routineEntryList
      */
-    private void populateDragListView(List<Workout> workoutList) {
-        DragAndDropRoutineItemAdapter listAdapter = new DragAndDropRoutineItemAdapter(RoutineActivity.this, workoutList, R.layout.drag_view_list_item, R.id.grab_handle, true);
+    private void populateDragListView(List<RoutineEntry> routineEntryList) {
+        DragAndDropRoutineEntryItemAdapter listAdapter = new DragAndDropRoutineEntryItemAdapter(RoutineActivity.this, routineEntryList, R.layout.drag_view_list_item, R.id.grab_handle, true);
         mDragListView.setAdapter(listAdapter, true);
         mDragListView.setCanDragHorizontally(true);
 
@@ -186,23 +166,11 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
 
         Hercules.getInstance().getDaoSession().getRoutineDao().insertOrReplace(routine);
 
-        Iterator<Workout> workoutList = mDragListView.getAdapter().getItemList().iterator();
-        while (workoutList.hasNext()) {
-            Workout selectedWorkout = workoutList.next();
-
-            RoutineEntry routineEntry = new RoutineEntry();
-            routineEntry.setRoutineEntryType(RoutineEntry.RoutineEntryType.WORKOUT);
-            routineEntry.setName(selectedWorkout.getName());
-            routineEntry.setBodyPartId(selectedWorkout.getBodyPartId());
-            routineEntry.setStandardNumberOfRepetitions(selectedWorkout.getStandardNumberOfRepetitions());
-            routineEntry.setStandardNumberOfSets(selectedWorkout.getStandardNumberOfSets());
-            routineEntry.setDuration(selectedWorkout.getDuration());
-            routineEntry.setCountDurationInReverse(selectedWorkout.getCountDurationInReverse());
-            routineEntry.setCountRepetitionsInReverse(selectedWorkout.getCountRepetitionsInReverse());
-            routineEntry.setTimeToGetInPosition(selectedWorkout.getTimeToGetInPosition());
-            routineEntry.setRestTimeAfterExercise(selectedWorkout.getRestTimeAfterExercise());
+        Iterator<RoutineEntry> routineEntryIterator = mDragListView.getAdapter().getItemList().iterator();
+        while (routineEntryIterator.hasNext()) {
+            RoutineEntry routineEntry = routineEntryIterator.next();
+            routineEntry.setRoutineEntryId(null); //remove any previously assigned ID
             routineEntry.setRoutineId(routine.getRoutineId());
-
             Hercules.getInstance().getDaoSession().getRoutineEntryDao().insert(routineEntry);
         }
 
@@ -229,8 +197,8 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_WORKOUT && resultCode == RESULT_OK) {
-            List<Workout> selectedWorkoutList = (List<Workout>) data.getSerializableExtra("selectedWorkouts");
-            List<Workout> existingWorkoutList = new ArrayList<>();
+            List<RoutineEntry> selectedWorkoutList = RoutineEntry.convertWorkoutListToRoutineEntryList(null, (List<Workout>) data.getSerializableExtra("selectedWorkouts"));
+            List<RoutineEntry> existingWorkoutList = new ArrayList<>();
             if (mDragListView.getAdapter() != null)
                 existingWorkoutList = mDragListView.getAdapter().getItemList();
             existingWorkoutList.addAll(selectedWorkoutList);

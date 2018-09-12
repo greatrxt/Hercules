@@ -17,18 +17,18 @@ import com.woxthebox.draglistview.DragItemAdapter;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.BodyPart;
-import com.xenodochium.hercules.model.Workout;
+import com.xenodochium.hercules.model.RoutineEntry;
 
 import java.util.List;
 
-public class DragAndDropRoutineItemAdapter extends DragItemAdapter<Workout, DragAndDropRoutineItemAdapter.ViewHolder> {
+public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineEntry, DragAndDropRoutineEntryItemAdapter.ViewHolder> {
 
     private int mLayoutId;
     private int mGrabHandleId;
     private boolean mDragOnLongPress;
     private Context context;
 
-    public DragAndDropRoutineItemAdapter(Context context, List<Workout> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
+    public DragAndDropRoutineEntryItemAdapter(Context context, List<RoutineEntry> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
         this.context = context;
         mLayoutId = layoutId;
         mGrabHandleId = grabHandleId;
@@ -36,12 +36,6 @@ public class DragAndDropRoutineItemAdapter extends DragItemAdapter<Workout, Drag
         setItemList(list);
     }
 
-    /**
-     * @return
-     */
-    public List getWorkoutsList() {
-        return mItemList;
-    }
 
     @NonNull
     @Override
@@ -67,7 +61,7 @@ public class DragAndDropRoutineItemAdapter extends DragItemAdapter<Workout, Drag
 
     @Override
     public long getUniqueItemId(int position) {
-        return mItemList.get(position).getWorkoutId();
+        return mItemList.get(position).getRoutineEntryId();
         //return position;
     }
 
@@ -91,23 +85,23 @@ public class DragAndDropRoutineItemAdapter extends DragItemAdapter<Workout, Drag
             final View dialogView = inflater.inflate(R.layout.activity_workout, null);
             dialogBuilder.setView(dialogView);
 
-            final Workout workout = mItemList.get(bindPosition);
+            final RoutineEntry routineEntry = mItemList.get(bindPosition);
             ((TextView) dialogView.findViewById(R.id.text_view_label_workout)).setText(context.getResources().getText(R.string.edit_workout));
-            ((TextInputLayout) dialogView.findViewById(R.id.til_exercise_name)).getEditText().setText(workout.getName());
-            ((TextInputLayout) dialogView.findViewById(R.id.til_number_of_sets)).getEditText().setText(String.valueOf(workout.getStandardNumberOfSets()));
-            ((TextInputLayout) dialogView.findViewById(R.id.til_repetitions)).getEditText().setText(String.valueOf(workout.getStandardNumberOfRepetitions()));
-            ((TextInputLayout) dialogView.findViewById(R.id.til_duration)).getEditText().setText(String.valueOf(workout.getDuration()));
-            ((TextInputLayout) dialogView.findViewById(R.id.til_time_to_get_in_position)).getEditText().setText(String.valueOf(workout.getTimeToGetInPosition()));
-            ((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().setText(String.valueOf(workout.getRestTimeAfterExercise()));
-            ((CheckBox) dialogView.findViewById(R.id.checkbox_count_duration_in_reverse)).setChecked(workout.getCountDurationInReverse());
-            ((CheckBox) dialogView.findViewById(R.id.checkbox_count_repetitions_in_reverse)).setChecked(workout.getCountDurationInReverse());
+            ((TextInputLayout) dialogView.findViewById(R.id.til_exercise_name)).getEditText().setText(routineEntry.getName());
+            ((TextInputLayout) dialogView.findViewById(R.id.til_number_of_sets)).getEditText().setText(String.valueOf(routineEntry.getStandardNumberOfSets()));
+            ((TextInputLayout) dialogView.findViewById(R.id.til_repetitions)).getEditText().setText(String.valueOf(routineEntry.getStandardNumberOfRepetitions()));
+            ((TextInputLayout) dialogView.findViewById(R.id.til_duration)).getEditText().setText(String.valueOf(routineEntry.getDuration()));
+            ((TextInputLayout) dialogView.findViewById(R.id.til_time_to_get_in_position)).getEditText().setText(String.valueOf(routineEntry.getTimeToGetInPosition()));
+            ((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().setText(String.valueOf(routineEntry.getRestTimeAfterExercise()));
+            ((CheckBox) dialogView.findViewById(R.id.checkbox_count_duration_in_reverse)).setChecked(routineEntry.getCountDurationInReverse());
+            ((CheckBox) dialogView.findViewById(R.id.checkbox_count_repetitions_in_reverse)).setChecked(routineEntry.getCountDurationInReverse());
 
             List<BodyPart> bodyPartsNameList = Hercules.getInstance().getDaoSession().getBodyPartDao().loadAll();
             ArrayAdapter<BodyPart> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, bodyPartsNameList);
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             ((Spinner) dialogView.findViewById(R.id.spinner_body_part)).setAdapter(spinnerAdapter);
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
-                if ((spinnerAdapter.getItem(i)).getBodyPartId() == workout.getBodyPartId()) {
+                if ((spinnerAdapter.getItem(i)).getBodyPartId() == routineEntry.getBodyPartId()) {
                     ((Spinner) dialogView.findViewById(R.id.spinner_body_part)).setSelection(i);
                 }
             }
@@ -115,17 +109,17 @@ public class DragAndDropRoutineItemAdapter extends DragItemAdapter<Workout, Drag
             dialogView.findViewById(R.id.button_ok).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    workout.setName(((TextInputLayout) dialogView.findViewById(R.id.til_exercise_name)).getEditText().getText().toString());
-                    workout.setStandardNumberOfSets(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_number_of_sets)).getEditText().getText().toString()));
-                    workout.setStandardNumberOfRepetitions(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_repetitions)).getEditText().getText().toString()));
-                    workout.setCountRepetitionsInReverse(((CheckBox) dialogView.findViewById(R.id.checkbox_count_repetitions_in_reverse)).isChecked());
-                    workout.setDuration(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_duration)).getEditText().getText().toString()));
-                    workout.setCountDurationInReverse(((CheckBox) dialogView.findViewById(R.id.checkbox_count_duration_in_reverse)).isChecked());
+                    routineEntry.setName(((TextInputLayout) dialogView.findViewById(R.id.til_exercise_name)).getEditText().getText().toString());
+                    routineEntry.setStandardNumberOfSets(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_number_of_sets)).getEditText().getText().toString()));
+                    routineEntry.setStandardNumberOfRepetitions(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_repetitions)).getEditText().getText().toString()));
+                    routineEntry.setCountRepetitionsInReverse(((CheckBox) dialogView.findViewById(R.id.checkbox_count_repetitions_in_reverse)).isChecked());
+                    routineEntry.setDuration(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_duration)).getEditText().getText().toString()));
+                    routineEntry.setCountDurationInReverse(((CheckBox) dialogView.findViewById(R.id.checkbox_count_duration_in_reverse)).isChecked());
                     if (!((TextInputLayout) dialogView.findViewById(R.id.til_time_to_get_in_position)).getEditText().getText().toString().isEmpty())
-                        workout.setTimeToGetInPosition(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_time_to_get_in_position)).getEditText().getText().toString()));
+                        routineEntry.setTimeToGetInPosition(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_time_to_get_in_position)).getEditText().getText().toString()));
                     if (!((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().getText().toString().isEmpty())
-                        workout.setRestTimeAfterExercise(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().getText().toString()));
-                    workout.setBodyPartId(((BodyPart) ((Spinner) dialogView.findViewById(R.id.spinner_body_part)).getSelectedItem()).getBodyPartId());
+                        routineEntry.setRestTimeAfterExercise(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().getText().toString()));
+                    routineEntry.setBodyPartId(((BodyPart) ((Spinner) dialogView.findViewById(R.id.spinner_body_part)).getSelectedItem()).getBodyPartId());
                     notifyDataSetChanged();
                     alertDialog.dismiss();
                 }
