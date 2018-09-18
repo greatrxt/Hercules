@@ -28,4 +28,10 @@
     <string name="edit_routine">Edit Routine</string>
     <string name="delete">Delete</string>
     <string name="are_you_sure_you_want_to_delete_this_item">Are you sure you want to delete this item ?</string>
+    <string-array name="player_initiation">
+        <item>Okay ! Lets get started</item>
+        <item>Lets go</item>
+        <item>Beginning today's routine</item>
+        <item>3, 2, 1. Lets go !</item>
+    </string-array>
 </resources>

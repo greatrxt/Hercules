@@ -15,6 +15,7 @@ import java.util.List;
 
 public class Hercules extends Application {
 
+    public static final String TAG = "Hercules";
     private static Hercules instance;
     private DaoSession daoSession;
 

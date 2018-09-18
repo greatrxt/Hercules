@@ -15,6 +15,7 @@ import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.adapter.StandardHomeListItemAdapter;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.Routine;
+import com.xenodochium.hercules.model.RoutineEntry;
 
 import java.io.Serializable;
 import java.util.List;
@@ -80,6 +81,7 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
     public void onItemPlay(Object selectedItem) {
         Routine routine = (Routine) selectedItem;
         Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("routineId", routine.getRoutineId());
         intent.putExtra("workoutList", (Serializable) routine.getLinkedRoutineEntries());
         startActivity(intent);
     }
@@ -91,6 +93,7 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
                 .setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_item))
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Hercules.getInstance().getDaoSession().getRoutineEntryDao().delete((RoutineEntry) (((Routine) selectedItem)).getLinkedRoutineEntries());
                         Hercules.getInstance().getDaoSession().getRoutineDao().delete((Routine) selectedItem);
                         populateRoutineListView();
                     }

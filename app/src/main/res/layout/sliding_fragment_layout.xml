@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.xenodochium.hercules.ui.SlidingRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <ImageButton
+        android:id="@+id/image_button_slider_toggle_down"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="-5dp"
+        android:layout_marginRight="-5dp"
+        android:layout_marginTop="-7dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_arrow_down_white"
+        android:tint="@color/white" />
+
+    <com.woxthebox.draglistview.DragListView
+        android:id="@+id/drag_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp"
+        android:padding="15dp" />
+
+</com.xenodochium.hercules.ui.SlidingRelativeLayout>

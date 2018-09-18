@@ -3,4 +3,6 @@
     <dimen name="add_icon_margin">18dp</dimen>
     <dimen name="edit_text_bottom_margin">10dp</dimen>
     <dimen name="drag_drop_list_item_font_size">18sp</dimen>
+    <dimen name="default_stroke_width">15dp</dimen>
+    <dimen name="default_background_stroke_width">7dp</dimen>
 </resources>

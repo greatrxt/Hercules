@@ -156,8 +156,7 @@ public class ItemThreeFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onItemDelete(final Object selectedItem) {
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.delete) + " Body Part ?")
                 .setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_item))
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

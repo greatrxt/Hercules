@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.woxthebox.draglistview.DragItemAdapter;
 import com.xenodochium.hercules.R;
@@ -137,7 +138,7 @@ public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineE
 
         @Override
         public boolean onItemLongClicked(View view) {
-            //Toast.makeText(view.getContext(), "Item long clicked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), "Item long clicked", Toast.LENGTH_SHORT).show();
             return true;
         }
     }

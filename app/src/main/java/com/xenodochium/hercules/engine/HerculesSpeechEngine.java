@@ -16,6 +16,9 @@ public class HerculesSpeechEngine {
     private static Voice tempVoice;
     private static Thread speechHandler;
 
+    /**
+     * Find a male voice. Going for male voice since name of app is Hercules.
+     */
     public static void findVoice() {
         speechHandler = new Thread();
         final boolean[] voiceFound = {false};
@@ -66,7 +69,7 @@ public class HerculesSpeechEngine {
      *
      * @param text
      */
-    public static void speak(final String text) {
+    public synchronized static void speak(final String text) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -80,14 +83,20 @@ public class HerculesSpeechEngine {
         AsyncTask.execute(runnable); //running in background so that app does not freeze when while loop for tts.isSpeaking is going on
     }
 
+    /**
+     * Pause or stop TTS
+     */
+    public synchronized static void stopSpeaking() {
+        if (tts != null)
+            tts.stop();
+    }
 
     /**
      * @param text
      * @param utteranceProgressListener
      */
-    public static void speak(String text, UtteranceProgressListener utteranceProgressListener) {
+    public synchronized static void speak(String text, UtteranceProgressListener utteranceProgressListener) {
         tts.setOnUtteranceProgressListener(utteranceProgressListener);
-
         Bundle params = new Bundle();
         params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "");
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "UniqueId");

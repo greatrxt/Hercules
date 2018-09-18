@@ -1,11 +1,14 @@
 package com.xenodochium.hercules.model;
 
+import com.xenodochium.hercules.application.Hercules;
+
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToMany;
+import org.greenrobot.greendao.query.DeleteQuery;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +28,16 @@ public class Routine implements Serializable { //implementing serializable so th
 
     @ToMany(referencedJoinProperty = "routineId")
     private List<RoutineEntry> linkedRoutineEntries;
+
+    public void deleteAllLinkedEntries() {
+        if (routineId != null) {
+            final DeleteQuery<RoutineEntry> tableDeleteQuery = Hercules.getInstance().getDaoSession().queryBuilder(RoutineEntry.class)
+                    .where(RoutineEntryDao.Properties.RoutineId.eq(routineId))
+                    .buildDelete();
+            tableDeleteQuery.executeDeleteWithoutDetachingEntities();
+            Hercules.getInstance().getDaoSession().clear();
+        }
+    }
     /**
      * Used to resolve relations
      */

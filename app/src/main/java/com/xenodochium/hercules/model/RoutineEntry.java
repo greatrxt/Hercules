@@ -29,7 +29,7 @@ public class RoutineEntry implements Serializable {
 
     @NotNull
     @ToOne(joinProperty = "routineId")
-    private Routine linkedRoutineId;
+    private Routine linkedRoutine;
 
     @NotNull
     private int routineEntryPosition;
@@ -95,10 +95,11 @@ public class RoutineEntry implements Serializable {
      */
     @Generated(hash = 1945310476)
     private transient RoutineEntryDao myDao;
-    @Generated(hash = 1989140080)
-    private transient Long linkedRoutineId__resolvedKey;
     @Generated(hash = 1492005445)
     private transient Long forBodyPart__resolvedKey;
+
+    @Generated(hash = 1019995934)
+    private transient Long linkedRoutine__resolvedKey;
 
     @Generated(hash = 1493557286)
     public RoutineEntry(Long routineEntryId, @NotNull String name, long routineId,
@@ -216,43 +217,6 @@ public class RoutineEntry implements Serializable {
     /**
      * To-one relationship, resolved on first access.
      */
-    @Generated(hash = 327152493)
-    public Routine getLinkedRoutineId() {
-        long __key = this.routineId;
-        if (linkedRoutineId__resolvedKey == null || !linkedRoutineId__resolvedKey.equals(__key)) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            RoutineDao targetDao = daoSession.getRoutineDao();
-            Routine linkedRoutineIdNew = targetDao.load(__key);
-            synchronized (this) {
-                linkedRoutineId = linkedRoutineIdNew;
-                linkedRoutineId__resolvedKey = __key;
-            }
-        }
-        return linkedRoutineId;
-    }
-
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Generated(hash = 1063116693)
-    public void setLinkedRoutineId(@NotNull Routine linkedRoutineId) {
-        if (linkedRoutineId == null) {
-            throw new DaoException(
-                    "To-one property 'routineId' has not-null constraint; cannot set to-one to null");
-        }
-        synchronized (this) {
-            this.linkedRoutineId = linkedRoutineId;
-            routineId = linkedRoutineId.getRoutineId();
-            linkedRoutineId__resolvedKey = routineId;
-        }
-    }
-
-    /**
-     * To-one relationship, resolved on first access.
-     */
     @Generated(hash = 623521386)
     public BodyPart getForBodyPart() {
         long __key = this.bodyPartId;
@@ -337,6 +301,42 @@ public class RoutineEntry implements Serializable {
 
     public void setRoutineEntryType(RoutineEntryType routineEntryType) {
         this.routineEntryType = routineEntryType;
+    }
+
+    /**
+     * To-one relationship, resolved on first access.
+     */
+    @Generated(hash = 1691906188)
+    public Routine getLinkedRoutine() {
+        long __key = this.routineId;
+        if (linkedRoutine__resolvedKey == null || !linkedRoutine__resolvedKey.equals(__key)) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            RoutineDao targetDao = daoSession.getRoutineDao();
+            Routine linkedRoutineNew = targetDao.load(__key);
+            synchronized (this) {
+                linkedRoutine = linkedRoutineNew;
+                linkedRoutine__resolvedKey = __key;
+            }
+        }
+        return linkedRoutine;
+    }
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
+    @Generated(hash = 1756804977)
+    public void setLinkedRoutine(@NotNull Routine linkedRoutine) {
+        if (linkedRoutine == null) {
+            throw new DaoException("To-one property 'routineId' has not-null constraint; cannot set to-one to null");
+        }
+        synchronized (this) {
+            this.linkedRoutine = linkedRoutine;
+            routineId = linkedRoutine.getRoutineId();
+            linkedRoutine__resolvedKey = routineId;
+        }
     }
 
     /** called by internal mechanisms, do not call yourself. */

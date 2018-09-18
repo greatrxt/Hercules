@@ -84,6 +84,7 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
         mDragListView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         if (getIntent().getExtras() != null) {
+            Hercules.getInstance().getDaoSession().clear();
             Routine routine = Hercules.getInstance().getDaoSession().getRoutineDao().load((Long) getIntent().getExtras().get("routineId"));
             tilRoutineName.getEditText().setText(routine.getName());
             populateDragListView(routine.getLinkedRoutineEntries());
@@ -103,7 +104,7 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
     private void populateDragListView(List<RoutineEntry> routineEntryList) {
         DragAndDropRoutineEntryItemAdapter listAdapter = new DragAndDropRoutineEntryItemAdapter(RoutineActivity.this, routineEntryList, R.layout.drag_view_list_item, R.id.grab_handle, true);
         mDragListView.setAdapter(listAdapter, true);
-        mDragListView.setCanDragHorizontally(true);
+        //mDragListView.setCanDragHorizontally(true);
 
         mDragListView.setSwipeListener(new ListSwipeHelper.OnSwipeListenerAdapter() {
             @Override
@@ -115,8 +116,8 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
             public void onItemSwipeEnded(ListSwipeItem item, ListSwipeItem.SwipeDirection swipedDirection) {
                 // Swipe to delete on left
                 //if (swipedDirection == ListSwipeItem.SwipeDirection.RIGHT) {
-                Workout adapterItem = (Workout) item.getTag();
-                int pos = mDragListView.getAdapter().getPositionForItem(adapterItem);
+                RoutineEntry routineEntry = (RoutineEntry) item.getTag();
+                int pos = mDragListView.getAdapter().getPositionForItem(routineEntry);
                 mDragListView.getAdapter().removeItem(pos);
                 mDragListView.getAdapter().notifyDataSetChanged();
                 //}
@@ -161,7 +162,7 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
             routine.setRoutineId(routineId);
 
             //delete old RoutineEntries
-            Hercules.getInstance().getDaoSession().getRoutineEntryDao().deleteInTx(Hercules.getInstance().getDaoSession().getRoutineDao().load(routineId).getLinkedRoutineEntries());
+            routine.deleteAllLinkedEntries();
         }
 
         Hercules.getInstance().getDaoSession().getRoutineDao().insertOrReplace(routine);
