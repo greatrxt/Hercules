@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.xenodochium.hercules.R;
-import com.xenodochium.hercules.application.Hercules;
-import com.xenodochium.hercules.engine.RoutineOrchestrator;
+import com.xenodochium.hercules.engine.RoutineOrchestratorImpl;
 import com.xenodochium.hercules.model.RoutineEntry;
 
 import java.util.List;
@@ -17,10 +17,13 @@ import java.util.List;
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
     ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind;
-    TextView textViewRoutineName, textViewRoutineEntryName, textViewTimerText, textViewRoutineEntrySetNumber;
+    TextView textViewRoutineName, textViewRoutineEntryName, textViewTimerText, textViewRepetitionsText, textViewRoutineEntrySetNumber,
+            textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
+            textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_player);
         initializeViews();
     }
@@ -29,13 +32,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onPause() {
         super.onPause();
-        RoutineOrchestrator.getInstance().pause();
+        RoutineOrchestratorImpl.getInstance().pause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        RoutineOrchestrator.getInstance().pause();
+        RoutineOrchestratorImpl.getInstance().pause();
     }
 
     /**
@@ -54,8 +57,17 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         textViewRoutineEntrySetNumber = findViewById(R.id.text_view_routine_entry_set_number);
         textViewRoutineEntryName = findViewById(R.id.text_view_routine_entry_name);
         textViewTimerText = findViewById(R.id.text_view_timer_text);
+        textViewRepetitionsText = findViewById(R.id.text_view_repetitions_text);
 
-        textViewRoutineName.setText(String.valueOf(Hercules.getInstance().getDaoSession().getRoutineDao().load(getIntent().getExtras().getLong("routineId")).getName()));
+        textViewRoutineEntryTtgpLabel = findViewById(R.id.text_view_routine_entry_ttgp_label);
+        textViewRoutineEntrySetLabel = findViewById(R.id.text_view_routine_entry_set_label);
+        textViewRoutineEntryRestLabel = findViewById(R.id.text_view_routine_entry_rest_label);
+
+        textViewRoutineEntryTtgp = findViewById(R.id.text_view_routine_entry_ttgp);
+        textViewRoutineEntrySet = findViewById(R.id.text_view_routine_entry_set);
+        textViewRoutineEntryRest = findViewById(R.id.text_view_routine_entry_rest);
+
+        textViewRoutineName.setText(getIntent().getExtras().getString("label"));
         imageButtonPlay = findViewById(R.id.image_button_play);
         imageButtonForward = findViewById(R.id.image_button_forward);
         imageButtonRewind = findViewById(R.id.image_button_rewind);
@@ -64,9 +76,16 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         imageButtonForward.setOnClickListener(this);
         imageButtonRewind.setOnClickListener(this);
 
-        RoutineOrchestrator.getInstance().initiate(this, (List<RoutineEntry>) getIntent().getExtras().getSerializable("workoutList"),
-                (CircularProgressBar) findViewById(R.id.circular_progress_repetitions), textViewRoutineEntryName, textViewRoutineEntrySetNumber, textViewTimerText,
+        RoutineOrchestratorImpl.getInstance().initiate(this, (List<RoutineEntry>) getIntent().getExtras().getSerializable("workoutList"),
+                (CircularProgressBar) findViewById(R.id.circular_progress_timer),
+                (CircularProgressBar) findViewById(R.id.circular_progress_repetitions),
+                textViewRoutineEntryName,
+                textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
+                textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest,
+                textViewRoutineEntrySetNumber, textViewTimerText, textViewRepetitionsText,
                 imageButtonPlay, imageButtonRewind, imageButtonForward);
+
+        RoutineOrchestratorImpl.getInstance().play();
     }
 
     /**
@@ -87,19 +106,17 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.image_button_play:
-                if (RoutineOrchestrator.getInstance().isPlaying()) {
-                    RoutineOrchestrator.getInstance().pause();
-                    imageButtonPlay.setImageDrawable(getDrawable(R.drawable.ic_play_icon));
+                if (RoutineOrchestratorImpl.getInstance().isPlaying()) {
+                    RoutineOrchestratorImpl.getInstance().pause();
                 } else {
-                    RoutineOrchestrator.getInstance().play();
-
+                    RoutineOrchestratorImpl.getInstance().play();
                 }
                 break;
             case R.id.image_button_forward:
-                RoutineOrchestrator.getInstance().next();
+                RoutineOrchestratorImpl.getInstance().next();
                 break;
             case R.id.image_button_rewind:
-                RoutineOrchestrator.getInstance().previous();
+                RoutineOrchestratorImpl.getInstance().previous();
                 break;
         }
     }

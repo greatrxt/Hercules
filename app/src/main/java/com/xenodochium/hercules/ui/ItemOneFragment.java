@@ -87,6 +87,7 @@ public class ItemOneFragment extends Fragment implements View.OnClickListener, S
         workoutList.add(workout);
 
         Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("label", workout.getName());
         intent.putExtra("workoutList", (Serializable) RoutineEntry.convertWorkoutListToRoutineEntryList((long) 0, workoutList));
         startActivity(intent);
     }

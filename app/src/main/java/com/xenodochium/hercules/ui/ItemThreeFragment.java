@@ -150,6 +150,7 @@ public class ItemThreeFragment extends Fragment implements View.OnClickListener,
         BodyPart bodyPart = (BodyPart) selectedItem;
 
         Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("label", bodyPart.getName());
         intent.putExtra("workoutList", (Serializable) RoutineEntry.convertWorkoutListToRoutineEntryList((long) 0, bodyPart.getLinkedWorkouts()));
         startActivity(intent);
     }

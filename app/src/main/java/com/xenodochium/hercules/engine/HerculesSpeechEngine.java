@@ -19,7 +19,7 @@ public class HerculesSpeechEngine {
     /**
      * Find a male voice. Going for male voice since name of app is Hercules.
      */
-    public static void findVoice() {
+    public static void findMaleVoice() {
         speechHandler = new Thread();
         final boolean[] voiceFound = {false};
         tts = new TextToSpeech(Hercules.getInstance(), new TextToSpeech.OnInitListener() {
@@ -65,18 +65,38 @@ public class HerculesSpeechEngine {
     }
 
     /**
-     * Run in background thread
-     *
+     * Will speak only if speechengine is not speaking or else it will skip
+     * Used for timer. In case timer is too fast, it is better to skip than be slow
      * @param text
      */
-    public synchronized static void speak(final String text) {
+    public synchronized static void skippableSpeak(final String text) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+            }
+        };
+
+        if (!tts.isSpeaking()) {
+            AsyncTask.execute(runnable); //running in background so that app does not freeze when while loop for tts.isSpeaking is going on
+        }
+    }
+
+    /**
+     * Run in background thread
+     * Will wait until speech engine finishes speaking and then will speak
+     * For important stuff
+     *
+     * @param text
+     */
+    public synchronized static void waitAndSpeak(final String text) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
                 while (tts.isSpeaking()) {
                     //wait
                 }
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
             }
         };
 
@@ -96,6 +116,10 @@ public class HerculesSpeechEngine {
      * @param utteranceProgressListener
      */
     public synchronized static void speak(String text, UtteranceProgressListener utteranceProgressListener) {
+        while (tts.isSpeaking()) {
+            //wait
+        }
+
         tts.setOnUtteranceProgressListener(utteranceProgressListener);
         Bundle params = new Bundle();
         params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "");

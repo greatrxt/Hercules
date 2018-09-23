@@ -12,7 +12,7 @@ import com.woxthebox.draglistview.swipe.ListSwipeHelper;
 import com.woxthebox.draglistview.swipe.ListSwipeItem;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.adapter.DragAndDropRoutineEntryItemAdapter;
-import com.xenodochium.hercules.engine.RoutineOrchestrator;
+import com.xenodochium.hercules.engine.RoutineOrchestratorImpl;
 import com.xenodochium.hercules.model.RoutineEntry;
 
 import java.util.ArrayList;
@@ -38,9 +38,10 @@ public class PlayListFragment extends Fragment {
 
         mDragListView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        ArrayList<RoutineEntry> routineEntryList = (ArrayList<RoutineEntry>) RoutineOrchestrator.getInstance().getRoutineEntryPlayList();
+        ArrayList<RoutineEntry> routineEntryList = (ArrayList<RoutineEntry>) RoutineOrchestratorImpl.getInstance().getRoutineEntryPlayList();
 
         DragAndDropRoutineEntryItemAdapter listAdapter = new DragAndDropRoutineEntryItemAdapter(getActivity(), routineEntryList, R.layout.drag_view_list_item, R.id.grab_handle, true);
+        RoutineOrchestratorImpl.getInstance().setDragAndDropRoutineEntryItemAdapter(listAdapter);
         mDragListView.setAdapter(listAdapter, true);
         mDragListView.setCanDragHorizontally(false);
         mDragListView.setSwipeListener(new ListSwipeHelper.OnSwipeListenerAdapter() {

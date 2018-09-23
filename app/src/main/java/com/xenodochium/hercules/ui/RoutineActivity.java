@@ -167,14 +167,18 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
 
         Hercules.getInstance().getDaoSession().getRoutineDao().insertOrReplace(routine);
 
-        Iterator<RoutineEntry> routineEntryIterator = mDragListView.getAdapter().getItemList().iterator();
-        while (routineEntryIterator.hasNext()) {
-            RoutineEntry routineEntry = routineEntryIterator.next();
-            routineEntry.setRoutineEntryId(null); //remove any previously assigned ID
-            routineEntry.setRoutineId(routine.getRoutineId());
-            Hercules.getInstance().getDaoSession().getRoutineEntryDao().insert(routineEntry);
+        if (mDragListView.getAdapter() != null) {
+            List<RoutineEntry> routineEntryList = mDragListView.getAdapter().getItemList();
+            if (routineEntryList.size() > 0) {
+                Iterator<RoutineEntry> routineEntryIterator = routineEntryList.iterator();
+                while (routineEntryIterator.hasNext()) {
+                    RoutineEntry routineEntry = routineEntryIterator.next();
+                    routineEntry.setRoutineEntryId(null); //remove any previously assigned ID
+                    routineEntry.setRoutineId(routine.getRoutineId());
+                    Hercules.getInstance().getDaoSession().getRoutineEntryDao().insert(routineEntry);
+                }
+            }
         }
-
         Hercules.getInstance().getDaoSession().getDatabase().setTransactionSuccessful();
         Hercules.getInstance().getDaoSession().getDatabase().endTransaction();
 

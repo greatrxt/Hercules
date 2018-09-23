@@ -30,6 +30,7 @@ public class Routine implements Serializable { //implementing serializable so th
     private List<RoutineEntry> linkedRoutineEntries;
 
     public void deleteAllLinkedEntries() {
+
         if (routineId != null) {
             final DeleteQuery<RoutineEntry> tableDeleteQuery = Hercules.getInstance().getDaoSession().queryBuilder(RoutineEntry.class)
                     .where(RoutineEntryDao.Properties.RoutineId.eq(routineId))

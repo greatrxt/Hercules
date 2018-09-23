@@ -38,7 +38,7 @@ public class Hercules extends Application {
 
         daoSession = new DaoMaster(db).newSession();
         insertBasicData();
-        HerculesSpeechEngine.findVoice();
+        HerculesSpeechEngine.findMaleVoice();
     }
 
     public DaoSession getDaoSession() {

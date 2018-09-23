@@ -81,7 +81,7 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
     public void onItemPlay(Object selectedItem) {
         Routine routine = (Routine) selectedItem;
         Intent intent = new Intent(getActivity(), PlayerActivity.class);
-        intent.putExtra("routineId", routine.getRoutineId());
+        intent.putExtra("label", routine.getName());
         intent.putExtra("workoutList", (Serializable) routine.getLinkedRoutineEntries());
         startActivity(intent);
     }
