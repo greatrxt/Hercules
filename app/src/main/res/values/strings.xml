@@ -33,6 +33,8 @@
     <string name="set">Set</string>
     <string name="counting_duration">Couting Duration</string>
     <string name="counting_repetitions">Counting Repetitions</string>
+    <string name="add_break">Add Time Break</string>
+    <string name="break_time_in_seconds">Break Time ( In Seconds )</string>
     <string-array name="player_initiation">
         <item>Okay ! Lets get started</item>
         <item>Lets go</item>

@@ -57,7 +57,8 @@ public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineE
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        String text = mItemList.get(position).getName();
+        RoutineEntry routineEntry = mItemList.get(position);
+        String text = routineEntry.getName();
         holder.textViewExerciseOrder.setText(String.valueOf(position + 1));
         holder.textViewExerciseName.setText(text);
 
@@ -68,12 +69,16 @@ public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineE
             }
         }
 
-        holder.textViewExerciseSets.setText(
-                mItemList.get(position).getTimeToGetInPosition() + " Seconds To Get In Position\n"
-                        + mItemList.get(position).getStandardNumberOfRepetitions() + " Repetitions X "
-                        + mItemList.get(position).getStandardNumberOfSets() + " Sets\n"
-                        + mItemList.get(position).getRestTimeAfterExercise() + "  Seconds Rest After Each Set\n");
-        holder.itemView.setTag(mItemList.get(position));
+        if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.REST)) {
+            holder.textViewExerciseSets.setText(routineEntry.getDuration() + " Seconds");
+        } else {
+            holder.textViewExerciseSets.setText(
+                    routineEntry.getTimeToGetInPosition() + " Seconds To Get In Position\n"
+                            + routineEntry.getStandardNumberOfRepetitions() + " Repetitions X "
+                            + routineEntry.getStandardNumberOfSets() + " Sets\n"
+                            + routineEntry.getRestTimeAfterExercise() + "  Seconds Rest After Each Set\n");
+        }
+        holder.itemView.setTag(routineEntry);
         holder.bindPosition = position;
 
         viewHolderMap.put(position, holder);

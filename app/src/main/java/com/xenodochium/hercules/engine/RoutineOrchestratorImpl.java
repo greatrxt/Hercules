@@ -152,7 +152,7 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
                 @Override
                 public void run() {
                     textViewRoutineEntryName.setText(String.valueOf(routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber).getName()));
-                    if (dragAndDropRoutineEntryItemAdapter != null) {
+                    if (dragAndDropRoutineEntryItemAdapter != null) {   //make selected item bold if adapter is available
                         Iterator<Integer> viewsIterator = dragAndDropRoutineEntryItemAdapter.getViewHolderMap().keySet().iterator();
                         while (viewsIterator.hasNext()) {
                             Integer position = viewsIterator.next();

@@ -37,7 +37,7 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
     private CircularProgressBar timerView, repetionsView;
     private TextView timerTextView, repetionsTextView;
 
-    private boolean narrateSeconds = true;
+    private boolean narrateSeconds = false;
 
     private Timer repetitionsTimer, durationTimer;
 
@@ -112,6 +112,11 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 textViewRoutineEntrySet.setText(routineEntry.getStandardNumberOfRepetitions() + " Reps in " + routineEntry.getDuration() + " Seconds");
                 textViewRoutineEntryRest.setText(routineEntry.getRestTimeAfterExercise() + " Seconds");
 
+                //if repettions is zero, count seconds
+                if (routineEntry.getStandardNumberOfRepetitions() == 0) {
+                    narrateSeconds = true;
+                }
+                
                 if (narrateSeconds) {
                     timerView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                     repetionsView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimaryDark));

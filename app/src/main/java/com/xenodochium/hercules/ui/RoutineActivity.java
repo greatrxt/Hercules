@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +30,7 @@ import com.xenodochium.hercules.model.Workout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class RoutineActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -82,18 +86,19 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         mDragListView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
+        List<RoutineEntry> routineEntryList = new ArrayList<>();
         if (getIntent().getExtras() != null) {
             Hercules.getInstance().getDaoSession().clear();
             Routine routine = Hercules.getInstance().getDaoSession().getRoutineDao().load((Long) getIntent().getExtras().get("routineId"));
             tilRoutineName.getEditText().setText(routine.getName());
-            populateDragListView(routine.getLinkedRoutineEntries());
+            routineEntryList = routine.getLinkedRoutineEntries();
             ((TextView) findViewById(R.id.text_view_create_routine)).setText(getString(R.string.edit_routine));
             //don't show keyboard
             getWindow().setSoftInputMode(WindowManager.
                     LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
 
+        populateDragListView(routineEntryList);
     }
 
     /**
@@ -135,6 +140,42 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.menu_item_add_rest:
                 ((FloatingActionMenu) findViewById(R.id.fam_routine_menu)).close(true);
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
+                View mView = layoutInflaterAndroid.inflate(R.layout.alert_box_add_rest, null);
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(RoutineActivity.this, R.style.AppThemeDialog);
+                alertDialogBuilderUserInput.setView(mView);
+
+                alertDialogBuilderUserInput.setCancelable(false);
+                final AlertDialog alertDialogAddRest = alertDialogBuilderUserInput.create();
+                Button buttonAlertCancel = mView.findViewById(R.id.button_alert_cancel);
+                Button buttonAlertOk = mView.findViewById(R.id.button_alert_ok);
+                final EditText editTextBreakDuration = mView.findViewById(R.id.edit_text_add_break_duration);
+                buttonAlertOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (editTextBreakDuration.getText().toString().isEmpty()) {
+                            editTextBreakDuration.setError(getResources().getString(R.string.cannot_be_empty));
+                        } else {
+                            RoutineEntry routineEntry = new RoutineEntry();
+                            routineEntry.setRoutineEntryId(new Random().nextLong());
+                            routineEntry.setName(RoutineEntry.RoutineEntryType.REST.toString());
+                            routineEntry.setRoutineEntryType(RoutineEntry.RoutineEntryType.REST);
+                            routineEntry.setDuration(Integer.valueOf(editTextBreakDuration.getText().toString()));
+                            mDragListView.getAdapter().getItemList().add(routineEntry);
+                            populateDragListView(mDragListView.getAdapter().getItemList());
+                            alertDialogAddRest.dismiss();
+                        }
+                    }
+                });
+                buttonAlertCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialogAddRest.dismiss();
+                    }
+                });
+
+
+                alertDialogAddRest.show();
                 break;
             case R.id.button_ok:
                 if (routineDataIsValid()) {
