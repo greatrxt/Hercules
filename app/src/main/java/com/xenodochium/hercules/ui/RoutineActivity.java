@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.woxthebox.draglistview.DragListView;
 import com.woxthebox.draglistview.swipe.ListSwipeHelper;
 import com.woxthebox.draglistview.swipe.ListSwipeItem;
@@ -35,6 +36,7 @@ import java.util.Random;
 public class RoutineActivity extends AppCompatActivity implements View.OnClickListener {
 
     private DragListView mDragListView;
+    private FirebaseAnalytics mFirebaseAnalytics;
     public final static int REQUEST_WORKOUT = 9382;
     private com.github.clans.fab.FloatingActionButton buttonAddExercise, buttonAddRest;
     private TextInputLayout tilRoutineName;
@@ -44,6 +46,7 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         getSupportActionBar().hide();
         initializeViews();
     }
@@ -158,8 +161,8 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
                         } else {
                             RoutineEntry routineEntry = new RoutineEntry();
                             routineEntry.setRoutineEntryId(new Random().nextLong());
-                            routineEntry.setName(RoutineEntry.RoutineEntryType.REST.toString());
-                            routineEntry.setRoutineEntryType(RoutineEntry.RoutineEntryType.REST);
+                            routineEntry.setName(RoutineEntry.RoutineEntryType.BREAK.toString());
+                            routineEntry.setRoutineEntryType(RoutineEntry.RoutineEntryType.BREAK);
                             routineEntry.setDuration(Integer.valueOf(editTextBreakDuration.getText().toString()));
                             mDragListView.getAdapter().getItemList().add(routineEntry);
                             populateDragListView(mDragListView.getAdapter().getItemList());
@@ -196,7 +199,11 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
         Hercules.getInstance().getDaoSession().getDatabase().beginTransaction();
 
         Routine routine = new Routine();
+        Bundle bundle = new Bundle();   //for firebase analytics
+
         routine.setName(tilRoutineName.getEditText().getText().toString());
+        bundle.putString("routine_name", tilRoutineName.getEditText().getText().toString());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, routine.getClass().getSimpleName());
 
         if (getIntent().getExtras() != null) {
             long routineId = (Long) getIntent().getExtras().get("routineId");
@@ -204,6 +211,8 @@ public class RoutineActivity extends AppCompatActivity implements View.OnClickLi
 
             //delete old RoutineEntries
             routine.deleteAllLinkedEntries();
+        } else {
+            mFirebaseAnalytics.logEvent("save_routine", bundle);
         }
 
         Hercules.getInstance().getDaoSession().getRoutineDao().insertOrReplace(routine);

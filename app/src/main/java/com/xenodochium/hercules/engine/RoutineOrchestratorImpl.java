@@ -43,6 +43,11 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
         initiation = Arrays.asList(Hercules.getInstance().getResources().getStringArray(R.array.player_initiation));
     }
 
+    /**
+     * Singleton class
+     *
+     * @return
+     */
     public static RoutineOrchestratorImpl getInstance() {
         if (routineOrchestratorImpl == null) {
             routineOrchestratorImpl = new RoutineOrchestratorImpl();
@@ -51,6 +56,26 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
         return routineOrchestratorImpl;
     }
 
+    /**
+     * Initiate parameters
+     * @param activity
+     * @param routineEntryPlayList
+     * @param timerView
+     * @param repetitionsView
+     * @param textViewRoutineEntryName
+     * @param textViewRoutineEntryTtgpLabel
+     * @param textViewRoutineEntrySetLabel
+     * @param textViewRoutineEntryRestLabel
+     * @param textViewRoutineEntryTtgp
+     * @param textViewRoutineEntrySet
+     * @param textViewRoutineEntryRest
+     * @param textViewRoutineEntrySetNumber
+     * @param textViewTimerText
+     * @param textViewRepetitionsText
+     * @param imageButtonPlay
+     * @param imageButtonRewind
+     * @param imageButtonForward
+     */
     public void initiate(Activity activity, List<RoutineEntry> routineEntryPlayList,
                          CircularProgressBar timerView,
                          CircularProgressBar repetitionsView,
@@ -180,6 +205,9 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
         }
     }
 
+    /**
+     * Pause player
+     */
     public void pause() {
         isPlaying = false;
         activity.runOnUiThread(new Runnable() {

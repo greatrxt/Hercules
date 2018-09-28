@@ -93,7 +93,8 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
                 .setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_item))
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Hercules.getInstance().getDaoSession().getRoutineEntryDao().delete((RoutineEntry) (((Routine) selectedItem)).getLinkedRoutineEntries());
+                        List<RoutineEntry> routineEntryList = (((Routine) selectedItem)).getLinkedRoutineEntries();
+                        Hercules.getInstance().getDaoSession().getRoutineEntryDao().deleteInTx(routineEntryList);
                         Hercules.getInstance().getDaoSession().getRoutineDao().delete((Routine) selectedItem);
                         populateRoutineListView();
                     }

@@ -69,7 +69,7 @@ public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineE
             }
         }
 
-        if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.REST)) {
+        if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.BREAK)) {
             holder.textViewExerciseSets.setText(routineEntry.getDuration() + " Seconds");
         } else {
             holder.textViewExerciseSets.setText(

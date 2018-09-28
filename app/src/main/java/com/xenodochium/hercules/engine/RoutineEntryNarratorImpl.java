@@ -104,19 +104,40 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
                 currentRoutineEntryStage = -1;
                 currentRoutineEntrySetNumber = 0;
-                textViewRoutineEntryTtgpLabel.setText(activity.getString(R.string.get_in_position));
-                textViewRoutineEntrySetLabel.setText(activity.getString(R.string.set));
-                textViewRoutineEntryRestLabel.setText(activity.getString(R.string.rest_time));
 
-                textViewRoutineEntryTtgp.setText(routineEntry.getTimeToGetInPosition() + " Seconds");
-                textViewRoutineEntrySet.setText(routineEntry.getStandardNumberOfRepetitions() + " Reps in " + routineEntry.getDuration() + " Seconds");
-                textViewRoutineEntryRest.setText(routineEntry.getRestTimeAfterExercise() + " Seconds");
+                if (routineEntry.getTimeToGetInPosition() > 0) {
+                    textViewRoutineEntryTtgpLabel.setText(activity.getString(R.string.get_in_position));
+                    textViewRoutineEntryTtgp.setText(routineEntry.getTimeToGetInPosition() + " Seconds");
+                } else {
+                    textViewRoutineEntryTtgpLabel.setText("");
+                    textViewRoutineEntryTtgp.setText("");
+                }
+
+                if (routineEntry.getStandardNumberOfRepetitions() > 0) {
+                    textViewRoutineEntrySetLabel.setText(activity.getString(R.string.set));
+                    textViewRoutineEntrySet.setText(routineEntry.getStandardNumberOfRepetitions() + " Reps in " + routineEntry.getDuration() + " Seconds");
+                } else {
+
+                    if (routineEntry.getDuration() > 0) {
+                        textViewRoutineEntrySetLabel.setText(activity.getString(R.string.duration));
+                        textViewRoutineEntrySet.setText(routineEntry.getDuration() + " Seconds");
+                    } else {
+                        textViewRoutineEntrySetLabel.setText("");
+                        textViewRoutineEntrySet.setText("");
+                    }
+                }
+
+                if (routineEntry.getRestTimeAfterExercise() > 0) {
+                    textViewRoutineEntryRestLabel.setText(activity.getString(R.string.rest_time));
+                    textViewRoutineEntryRest.setText(routineEntry.getRestTimeAfterExercise() + " Seconds");
+                } else {
+                    textViewRoutineEntryRestLabel.setText("");
+                    textViewRoutineEntryRest.setText("");
+                }
 
                 //if repettions is zero, count seconds
-                if (routineEntry.getStandardNumberOfRepetitions() == 0) {
-                    narrateSeconds = true;
-                }
-                
+                narrateSeconds = routineEntry.getStandardNumberOfRepetitions() == 0;
+
                 if (narrateSeconds) {
                     timerView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                     repetionsView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimaryDark));
@@ -201,24 +222,34 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 break;
             case RES_GET_IN_POSITION_SPEECH:
 
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textViewRoutineEntryTtgpLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
-                        textViewRoutineEntryTtgp.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+                if (routineEntry.getTimeToGetInPosition() > 0) {
 
-                        textViewRoutineEntryTtgpLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
-                        textViewRoutineEntryTtgp.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
-                    }
-                });
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewRoutineEntryTtgpLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+                            textViewRoutineEntryTtgp.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
 
-                HerculesSpeechEngine.speak("Beginning set " + (currentRoutineEntrySetNumber + 1) + " for " + routineEntry.getName() + " in " + routineEntry.getTimeToGetInPosition() + " seconds. Get in position.", this);
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textViewRoutineEntrySetNumber.setText("Set " + (currentRoutineEntrySetNumber + 1) + " of " + routineEntry.getStandardNumberOfSets());
-                    }
-                });
+                            textViewRoutineEntryTtgpLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
+                            textViewRoutineEntryTtgp.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
+                        }
+                    });
+
+                    HerculesSpeechEngine.speak("Beginning set " + (currentRoutineEntrySetNumber + 1) + " for " + routineEntry.getName() + " in " + routineEntry.getTimeToGetInPosition() + " seconds. Get in position.", this);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (routineEntry.getStandardNumberOfSets() > 0) {
+                                textViewRoutineEntrySetNumber.setText("Set " + (currentRoutineEntrySetNumber + 1) + " of " + routineEntry.getStandardNumberOfSets());
+                            } else {
+                                textViewRoutineEntrySetNumber.setText("");
+                            }
+                        }
+                    });
+                } else {
+                    currentRoutineEntryStage = RES_SET_SPEECH;
+                    narrate();
+                }
                 break;
             case RES_GET_IN_POSITION_TIMER:
 
@@ -269,18 +300,23 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 break;
             case RES_REST_SPEECH:
 
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textViewRoutineEntryRestLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
-                        textViewRoutineEntryRest.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+                if (routineEntry.getRestTimeAfterExercise() > 0) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewRoutineEntryRestLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+                            textViewRoutineEntryRest.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
 
-                        textViewRoutineEntryRestLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
-                        textViewRoutineEntryRest.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
-                    }
-                });
+                            textViewRoutineEntryRestLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
+                            textViewRoutineEntryRest.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info_large));
+                        }
+                    });
 
-                HerculesSpeechEngine.speak("Rest for " + routineEntry.getRestTimeAfterExercise() + " seconds", this);
+                    HerculesSpeechEngine.speak("Rest for " + routineEntry.getRestTimeAfterExercise() + " seconds", this);
+                } else {
+                    currentRoutineEntryStage = RES_SET_LOOP_CHECK;
+                    narrate();
+                }
                 break;
             case RES_REST_TIMER:
 

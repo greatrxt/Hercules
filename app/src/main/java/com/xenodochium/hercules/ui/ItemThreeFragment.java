@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.adapter.StandardHomeListItemAdapter;
 import com.xenodochium.hercules.application.Hercules;
@@ -26,7 +27,7 @@ import java.util.List;
 
 public class ItemThreeFragment extends Fragment implements View.OnClickListener, StandardHomeListItemAdapter.OnItemClickListener {
     ListView listViewBodyPart;
-
+    private FirebaseAnalytics mFirebaseAnalytics;
     private View fragmentView;
     private FloatingActionButton buttonAddBodyPart;
 
@@ -61,6 +62,7 @@ public class ItemThreeFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_item_three, container, false);
         initializeViews();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         return fragmentView;
     }
 
@@ -85,7 +87,13 @@ public class ItemThreeFragment extends Fragment implements View.OnClickListener,
                             editTextBodyPart.setError(getResources().getString(R.string.cannot_be_empty));
                         } else {
                             BodyPart bodyPart = new BodyPart();
+                            Bundle bundle = new Bundle();   //for firebase analytics
+                            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, bodyPart.getClass().getSimpleName());
+
                             bodyPart.setName(editTextBodyPart.getText().toString().trim());
+                            bundle.putString("body_part_name", editTextBodyPart.getText().toString().trim());
+                            mFirebaseAnalytics.logEvent("save_body_part", bundle);
+
                             Hercules.getInstance().getDaoSession().getBodyPartDao().insertOrReplace(bodyPart);
                             populateBodyPartListView();
                             alertDialogAddExercise.dismiss();

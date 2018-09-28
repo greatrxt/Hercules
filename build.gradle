@@ -6,10 +6,19 @@ buildscript {
         google()
         jcenter()
         mavenCentral() // add repository
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
-        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2' // add plugin
+        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
+        classpath 'com.google.gms:google-services:4.0.2' // add plugin
+        // Check for v3.1.2 or higher
+        classpath 'com.google.gms:google-services:4.1.0'
+
+        // Add dependency
+        classpath 'io.fabric.tools:gradle:1.25.4'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,6 +29,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url 'https://maven.google.com/'
+        }
     }
 }
 

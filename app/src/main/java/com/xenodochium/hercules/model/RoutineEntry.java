@@ -347,7 +347,7 @@ public class RoutineEntry implements Serializable {
     }
 
     public enum RoutineEntryType {
-        WORKOUT, REST
+        WORKOUT, BREAK
     }
 
     static class RoutineEntryTypeConvertor implements PropertyConverter<RoutineEntryType, String> {

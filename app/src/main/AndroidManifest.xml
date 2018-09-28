@@ -19,9 +19,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.WorkoutActivity" />
-        <activity android:name=".ui.PlayerActivity" />
+        <activity
+            android:name=".ui.PlayerActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".ui.RoutineActivity" />
-        <activity android:name=".ui.SelectWorkoutActivity"></activity>
+        <activity android:name=".ui.SelectWorkoutActivity" />
     </application>
 
 </manifest>
