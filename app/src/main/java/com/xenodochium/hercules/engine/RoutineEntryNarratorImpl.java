@@ -1,11 +1,20 @@
 package com.xenodochium.hercules.engine;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +22,7 @@ import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.RoutineEntry;
 import com.xenodochium.hercules.ui.CircularProgressBar;
+import com.xenodochium.hercules.ui.PlayerActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,7 +30,7 @@ import java.util.TimerTask;
 public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
     private static RoutineEntryNarratorImpl routineEntryNarratorImpl;
-    private final int
+    public static final int
             RES_INITIATE_SPEECH = -1,
             RES_GET_IN_POSITION_SPEECH = 0,
             RES_GET_IN_POSITION_TIMER = 1,
@@ -44,8 +54,9 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
     private Timer repetitionsTimer, durationTimer;
 
     private RoutineEntryNarratorImpl() {
-
+        registerBroadCastReceiver();
     }
+
 
     /**
      * Set routine entry. Reset set number to first one.
@@ -60,48 +71,62 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 textViewRoutineEntrySetNumber, textViewTimerText, textViewRepetitionsText, imageButtonPreviousSet, imageButtonNextSet);
     }
 
+    @SuppressLint("NewApi")
+    public void setNotification(String routineEntryName) {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager notificationManager = (NotificationManager) Hercules.getInstance().getSystemService(ns);
+
+        @SuppressWarnings("deprecation")
+        Notification notification = new Notification(R.mipmap.ic_launcher, null, System.currentTimeMillis());
+
+        RemoteViews notificationView = new RemoteViews(Hercules.getInstance().getPackageName(), R.layout.notification_playback_controller);
+        //the intent that is started when the notification is clicked (works)
+        Intent notificationIntent = new Intent(Hercules.getInstance(), PlayerActivity.class);
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(Hercules.getInstance(), 0, notificationIntent, 0);
+
+        notification.bigContentView = notificationView;
+        //notification.contentView = notificationView;
+        notification.contentIntent = pendingNotificationIntent;
+        notification.tickerText = routineEntryName;
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+
+        //this is the intent that is supposed to be called when the button is clicked
+        Intent playIntent = new Intent("com.xenodochium.hercules.ACTION_PLAY");
+        PendingIntent pendingPlayIntent = PendingIntent.getBroadcast(Hercules.getInstance(), 100, playIntent, 0);
+        notificationView.setOnClickPendingIntent(R.id.image_button_play, pendingPlayIntent);
+        if (RoutineOrchestratorImpl.getInstance().isPlaying()) {
+            notificationView.setImageViewResource(R.id.image_button_play, R.drawable.ic_pause_icon_gray_n10p_padding);
+        } else {
+            notificationView.setImageViewResource(R.id.image_button_play, R.drawable.ic_play_icon_gray_n10p_padding);
+        }
+
+        Intent nextItemIntent = new Intent("com.xenodochium.hercules.ACTION_NEXT");
+        PendingIntent pendingNextItemIntent = PendingIntent.getBroadcast(Hercules.getInstance(), 101, nextItemIntent, 0);
+        notificationView.setOnClickPendingIntent(R.id.image_button_forward, pendingNextItemIntent);
+
+        Intent previousItemIntent = new Intent("com.xenodochium.hercules.ACTION_PREVIOUS");
+        PendingIntent pendingPreviousItemIntent = PendingIntent.getBroadcast(Hercules.getInstance(), 102, previousItemIntent, 0);
+        notificationView.setOnClickPendingIntent(R.id.image_button_rewind, pendingPreviousItemIntent);
+
+        notificationView.setTextViewText(R.id.text_view_routine_entry_name, routineEntry.getName());
+        notificationManager.notify(1, notification);
+    }
+
     /**
-     * Maintain only one instance
      *
-     * @return
      */
-    public static RoutineEntryNarratorImpl getInstance() {
-        if (routineEntryNarratorImpl == null) {
-            routineEntryNarratorImpl = new RoutineEntryNarratorImpl();
-        }
+    private void registerBroadCastReceiver() {
 
-        return routineEntryNarratorImpl;
-    }
-
-    /**
-     * Reset all timers
-     */
-    private void resetTimers() {
-        if (repetitionsTimer != null)
-            repetitionsTimer.cancel();
-
-        if (durationTimer != null)
-            durationTimer.cancel();
-
-        if (activity != null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (textViewRepetitionsText != null) textViewRepetitionsText.setText("--");
-                    if (repetitionsView != null) repetitionsView.setProgressWithAnimation(0, 1000);
-
-                    if (textViewTimerText != null) textViewTimerText.setText("--");
-                    if (timerView != null) timerView.setProgressWithAnimation(0, 1000);
-                }
-            });
-        }
-    }
-
-    /**
-     * Stop speech
-     */
-    private void resetSpeechEngine() {
-        HerculesSpeechEngine.stopSpeaking();
+        //register broadcast receiver
+        NotificationControlListener broadcastReceiver = new NotificationControlListener();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        // set the custom action
+        intentFilter.addAction("com.xenodochium.hercules.ACTION_PLAY");
+        intentFilter.addAction("com.xenodochium.hercules.ACTION_PREVIOUS");
+        intentFilter.addAction("com.xenodochium.hercules.ACTION_NEXT");
+        // register the receiver
+        Hercules.getInstance().registerReceiver(broadcastReceiver, intentFilter);
     }
 
     /**
@@ -127,6 +152,8 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                setNotification(routineEntry.getName());
 
                 RoutineEntryNarratorImpl.this.timerView = timerView;
                 RoutineEntryNarratorImpl.this.repetitionsView = repetionsView;
@@ -214,20 +241,48 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         });
     }
 
-    @Override
-    public void onStart(String s) {
+    /**
+     * Maintain only one instance
+     *
+     * @return
+     */
+    public static RoutineEntryNarratorImpl getInstance() {
+        if (routineEntryNarratorImpl == null) {
+            routineEntryNarratorImpl = new RoutineEntryNarratorImpl();
+        }
 
+        return routineEntryNarratorImpl;
     }
 
-    @Override
-    public void onDone(String s) {
-        currentRoutineEntryStage++;
-        narrate();
+    /**
+     * Reset all timers
+     */
+    private void resetTimers() {
+        if (repetitionsTimer != null)
+            repetitionsTimer.cancel();
+
+        if (durationTimer != null)
+            durationTimer.cancel();
+
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (textViewRepetitionsText != null) textViewRepetitionsText.setText("--");
+                    if (repetitionsView != null) repetitionsView.setProgressWithAnimation(0, 1000);
+
+                    if (textViewTimerText != null) textViewTimerText.setText("--");
+                    if (timerView != null) timerView.setProgressWithAnimation(0, 1000);
+                }
+            });
+        }
     }
 
-    @Override
-    public void onError(String s) {
-
+    /**
+     * Stop speech
+     */
+    private void resetSpeechEngine() {
+        HerculesSpeechEngine.stopSpeaking();
     }
 
     /**
@@ -242,7 +297,11 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         resetInfoLayout();
         switch (currentRoutineEntryStage) {
             case RES_INITIATE_SPEECH:
-                HerculesSpeechEngine.speak("Lets start with " + routineEntry.getName(), this);
+                if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.BREAK)) {
+                    onDone(null);   //no need to speak about break
+                } else {
+                    HerculesSpeechEngine.speak("Lets start with " + routineEntry.getName(), this);
+                }
                 break;
             case RES_GET_IN_POSITION_SPEECH:
 
@@ -294,7 +353,11 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     }
                 });
 
-                HerculesSpeechEngine.speak("Beginning " + routineEntry.getName() + ". " + routineEntry.getStandardNumberOfRepetitions() + " repetitions in " + routineEntry.getDuration() + " seconds", this);
+                if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.BREAK)) {
+                    HerculesSpeechEngine.speak("Taking a break for " + routineEntry.getDuration() + " seconds", this);
+                } else {
+                    HerculesSpeechEngine.speak("Beginning " + routineEntry.getName() + ". " + routineEntry.getStandardNumberOfRepetitions() + " repetitions in " + routineEntry.getDuration() + " seconds", this);
+                }
                 break;
             case RES_SET_TIMER:
 
@@ -359,6 +422,36 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         }
 
         resetSetDecrementIncrementButtons();
+    }
+
+    @Override
+    public void onStart(String s) {
+
+    }
+
+    @Override
+    public void onDone(String s) {
+        currentRoutineEntryStage++;
+        narrate();
+    }
+
+    @Override
+    public void onError(String s) {
+
+    }
+
+    /**
+     * Change stage
+     *
+     * @param currentRoutineEntryStage
+     */
+    public void changeCurrentRoutineEntryStage(int currentRoutineEntryStage) {
+        if (this.currentRoutineEntryStage != currentRoutineEntryStage) {
+            resetSpeechEngine();
+            resetTimers();
+            this.currentRoutineEntryStage = currentRoutineEntryStage;
+            narrate();
+        }
     }
 
     /**
@@ -571,6 +664,35 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
             }
         });
     }
+
+    public int getCurrentRoutineEntryStage() {
+        return currentRoutineEntryStage;
+    }
+
+    /**
+     * Notification listener
+     */
+    public class NotificationControlListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Log.d("Hercules", "Received " + action);
+            if (action.equalsIgnoreCase("com.xenodochium.hercules.ACTION_PLAY")) {
+                if (RoutineOrchestratorImpl.getInstance().isPlaying()) {
+                    RoutineOrchestratorImpl.getInstance().pause();
+                } else {
+                    RoutineOrchestratorImpl.getInstance().play();
+                }
+
+                setNotification(routineEntry.getName());
+            } else if (action.equalsIgnoreCase("com.xenodochium.hercules.ACTION_NEXT")) {
+                RoutineOrchestratorImpl.getInstance().next();
+            } else if (action.equalsIgnoreCase("com.xenodochium.hercules.ACTION_PREVIOUS")) {
+                RoutineOrchestratorImpl.getInstance().previous();
+            }
+        }
+    }
+
     /**
      * @param routineEntry
      */

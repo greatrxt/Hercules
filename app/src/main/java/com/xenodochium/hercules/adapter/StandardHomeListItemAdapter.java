@@ -62,7 +62,7 @@ public class StandardHomeListItemAdapter<T> extends BaseAdapter {
                     ((OnItemClickListener) fragment).onItemPlay(getItem(position));
                 }
             });
-            
+
             if (objects.get(position) instanceof BodyPart) {
                 BodyPart bodyPart = (BodyPart) objects.get(position);
                 if (bodyPart.getLinkedWorkouts().size() == 0) {

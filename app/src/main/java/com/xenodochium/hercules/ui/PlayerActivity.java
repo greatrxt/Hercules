@@ -1,11 +1,14 @@
 package com.xenodochium.hercules.ui;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xenodochium.hercules.R;
@@ -17,10 +20,13 @@ import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
-    ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind, imageButtonPreviousSet, imageButtonNextSet, imageButtonLoop;
-    TextView textViewRoutineName, textViewRoutineEntryName, textViewTimerText, textViewRepetitionsText, textViewRoutineEntrySetNumber,
+    private ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind, imageButtonPreviousSet, imageButtonNextSet, imageButtonLoop;
+    private TextView textViewRoutineName, textViewRoutineEntryName, textViewTimerText, textViewRepetitionsText, textViewRoutineEntrySetNumber,
             textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
             textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest;
+
+    private LinearLayout linearLayoutTtgp, linearLayoutSet, linearLayoutRest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,16 +35,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         initializeViews();
     }
 
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        RoutineOrchestratorImpl.getInstance().pause();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(ns);
+        notificationManager.cancelAll();
         RoutineOrchestratorImpl.getInstance().pause();
     }
 
@@ -53,6 +55,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 playListFragmentUp();
             }
         });
+
+        linearLayoutTtgp = findViewById(R.id.layout_ttgp);
+        linearLayoutSet = findViewById(R.id.layout_set);
+        linearLayoutRest = findViewById(R.id.layout_rest);
+
+        linearLayoutTtgp.setOnClickListener(this);
+        linearLayoutSet.setOnClickListener(this);
+        linearLayoutRest.setOnClickListener(this);
 
         textViewRoutineName = findViewById(R.id.text_view_routine_name);
         textViewRoutineEntrySetNumber = findViewById(R.id.text_view_routine_entry_set_number);
@@ -85,6 +95,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         imageButtonNextSet.setOnClickListener(this);
         imageButtonLoop.setOnClickListener(this);
 
+        textViewRoutineEntryName.setOnClickListener(this);
         RoutineOrchestratorImpl.getInstance().initiate(this, (List<RoutineEntry>) getIntent().getExtras().getSerializable("workoutList"),
                 (CircularProgressBar) findViewById(R.id.circular_progress_timer),
                 (CircularProgressBar) findViewById(R.id.circular_progress_repetitions),
@@ -114,6 +125,27 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.text_view_routine_entry_name:
+                playListFragmentUp();
+                break;
+            case R.id.layout_ttgp:
+                if (RoutineEntryNarratorImpl.getInstance().getCurrentRoutineEntryStage() != RoutineEntryNarratorImpl.RES_GET_IN_POSITION_SPEECH
+                        && RoutineEntryNarratorImpl.getInstance().getCurrentRoutineEntryStage() != RoutineEntryNarratorImpl.RES_GET_IN_POSITION_TIMER) {
+                    RoutineEntryNarratorImpl.getInstance().changeCurrentRoutineEntryStage(RoutineEntryNarratorImpl.RES_GET_IN_POSITION_SPEECH);
+                }
+                break;
+            case R.id.layout_set:
+                if (RoutineEntryNarratorImpl.getInstance().getCurrentRoutineEntryStage() != RoutineEntryNarratorImpl.RES_SET_SPEECH
+                        && RoutineEntryNarratorImpl.getInstance().getCurrentRoutineEntryStage() != RoutineEntryNarratorImpl.RES_SET_TIMER) {
+                    RoutineEntryNarratorImpl.getInstance().changeCurrentRoutineEntryStage(RoutineEntryNarratorImpl.RES_SET_SPEECH);
+                }
+                break;
+            case R.id.layout_rest:
+                if (RoutineEntryNarratorImpl.getInstance().getCurrentRoutineEntryStage() != RoutineEntryNarratorImpl.RES_REST_SPEECH
+                        && RoutineEntryNarratorImpl.getInstance().getCurrentRoutineEntryStage() != RoutineEntryNarratorImpl.RES_REST_TIMER) {
+                    RoutineEntryNarratorImpl.getInstance().changeCurrentRoutineEntryStage(RoutineEntryNarratorImpl.RES_REST_SPEECH);
+                }
+                break;
             case R.id.image_button_play:
                 if (RoutineOrchestratorImpl.getInstance().isPlaying()) {
                     RoutineOrchestratorImpl.getInstance().pause();

@@ -21,6 +21,7 @@
         <activity android:name=".ui.WorkoutActivity" />
         <activity
             android:name=".ui.PlayerActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.RoutineActivity" />
         <activity android:name=".ui.SelectWorkoutActivity" />
