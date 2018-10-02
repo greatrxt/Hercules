@@ -133,9 +133,7 @@ public class BodyPart implements Serializable { //implementing serializable so t
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 168013184)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

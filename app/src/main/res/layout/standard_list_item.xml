@@ -20,8 +20,8 @@
         android:layout_height="match_parent"
         android:layout_toLeftOf="@+id/image_button_delete"
         android:backgroundTint="@android:color/transparent"
-        android:paddingRight="-3dp"
-        android:src="@drawable/ic_play_icon" />
+        android:paddingRight="-1dp"
+        android:src="@drawable/ic_play_icon_n5p_padding" />
 
     <ImageButton
         android:id="@+id/image_button_delete"
@@ -30,5 +30,5 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
         android:backgroundTint="@android:color/transparent"
-        android:src="@drawable/ic_trash_icon_gray" />
+        android:src="@drawable/ic_trash_icon_gray_0p_padding" />
 </RelativeLayout>

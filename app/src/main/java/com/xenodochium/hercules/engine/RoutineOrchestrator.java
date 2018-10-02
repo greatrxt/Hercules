@@ -10,4 +10,6 @@ public interface RoutineOrchestrator {
     void play();
 
     boolean isPlaying();
+
+    void loop();
 }

@@ -5,6 +5,7 @@ import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,11 +32,12 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
     private RoutineEntry routineEntry; //routine entry to narrate
     private TextView textViewRoutineEntrySetNumber, textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest,
             textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel;
+    private ImageButton imageButtonPreviousSet, imageButtonNextSet;
     private int currentRoutineEntrySetNumber = 0;
     private int currentRoutineEntryStage = -1;
     private Activity activity;
-    private CircularProgressBar timerView, repetionsView;
-    private TextView timerTextView, repetionsTextView;
+    private CircularProgressBar timerView, repetitionsView;
+    private TextView textViewTimerText, textViewRepetitionsText;
 
     private boolean narrateSeconds = false;
 
@@ -43,6 +45,19 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
     private RoutineEntryNarratorImpl() {
 
+    }
+
+    /**
+     * Set routine entry. Reset set number to first one.
+     *
+     * @param routineEntry
+     */
+    public void setRoutineEntry(RoutineEntry routineEntry) {
+        this.routineEntry = routineEntry;
+        initiate(activity, routineEntry, timerView, repetitionsView,
+                textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
+                textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest,
+                textViewRoutineEntrySetNumber, textViewTimerText, textViewRepetitionsText, imageButtonPreviousSet, imageButtonNextSet);
     }
 
     /**
@@ -59,31 +74,62 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
     }
 
     /**
-     * @param activity
-     * @param routineEntry
-     * @param timerView
-     * @param timerTextView
+     * Reset all timers
      */
-    public synchronized void initiate(final Activity activity, final RoutineEntry routineEntry, final CircularProgressBar timerView, final CircularProgressBar repetionsView,
-                                      final TextView textViewRoutineEntryTtgpLabel, final TextView textViewRoutineEntrySetLabel, final TextView textViewRoutineEntryRestLabel,
-                                      final TextView textViewRoutineEntryTtgp, final TextView textViewRoutineEntrySet, final TextView textViewRoutineEntryRest,
-                                      final TextView textViewRoutineEntrySetNumber, final TextView timerTextView, final TextView repetionsTextView) {
-
+    private void resetTimers() {
         if (repetitionsTimer != null)
             repetitionsTimer.cancel();
 
         if (durationTimer != null)
             durationTimer.cancel();
 
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (textViewRepetitionsText != null) textViewRepetitionsText.setText("--");
+                    if (repetitionsView != null) repetitionsView.setProgressWithAnimation(0, 1000);
+
+                    if (textViewTimerText != null) textViewTimerText.setText("--");
+                    if (timerView != null) timerView.setProgressWithAnimation(0, 1000);
+                }
+            });
+        }
+    }
+
+    /**
+     * Stop speech
+     */
+    private void resetSpeechEngine() {
+        HerculesSpeechEngine.stopSpeaking();
+    }
+
+    /**
+     * @param activity
+     * @param routineEntry
+     * @param timerView
+     * @param timerTextView
+     * @param imageButtonPreviousSet
+     * @param imageButtonNextSet
+     */
+    public synchronized void initiate(final Activity activity, final RoutineEntry routineEntry, final CircularProgressBar timerView, final CircularProgressBar repetionsView,
+                                      final TextView textViewRoutineEntryTtgpLabel, final TextView textViewRoutineEntrySetLabel, final TextView textViewRoutineEntryRestLabel,
+                                      final TextView textViewRoutineEntryTtgp, final TextView textViewRoutineEntrySet, final TextView textViewRoutineEntryRest,
+                                      final TextView textViewRoutineEntrySetNumber, final TextView timerTextView, final TextView repetionsTextView,
+                                      final ImageButton imageButtonPreviousSet, final ImageButton imageButtonNextSet) {
+
+
         RoutineEntryNarratorImpl.this.activity = activity;
         RoutineEntryNarratorImpl.this.routineEntry = routineEntry;
+
+        resetTimers();
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
                 RoutineEntryNarratorImpl.this.timerView = timerView;
-                RoutineEntryNarratorImpl.this.repetionsView = repetionsView;
+                RoutineEntryNarratorImpl.this.repetitionsView = repetionsView;
 
                 RoutineEntryNarratorImpl.this.textViewRoutineEntryTtgpLabel = textViewRoutineEntryTtgpLabel;
                 RoutineEntryNarratorImpl.this.textViewRoutineEntrySetLabel = textViewRoutineEntrySetLabel;
@@ -92,15 +138,12 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 RoutineEntryNarratorImpl.this.textViewRoutineEntrySet = textViewRoutineEntrySet;
                 RoutineEntryNarratorImpl.this.textViewRoutineEntryRest = textViewRoutineEntryRest;
 
-                RoutineEntryNarratorImpl.this.timerTextView = timerTextView;
-                RoutineEntryNarratorImpl.this.repetionsTextView = repetionsTextView;
+                RoutineEntryNarratorImpl.this.textViewTimerText = timerTextView;
+                RoutineEntryNarratorImpl.this.textViewRepetitionsText = repetionsTextView;
                 RoutineEntryNarratorImpl.this.textViewRoutineEntrySetNumber = textViewRoutineEntrySetNumber;
 
-                repetionsTextView.setText("--");
-                repetionsView.setProgressWithAnimation(0, 1000);
-
-                timerTextView.setText("--");
-                timerView.setProgressWithAnimation(0, 1000);
+                RoutineEntryNarratorImpl.this.imageButtonPreviousSet = imageButtonPreviousSet;
+                RoutineEntryNarratorImpl.this.imageButtonNextSet = imageButtonNextSet;
 
                 currentRoutineEntryStage = -1;
                 currentRoutineEntrySetNumber = 0;
@@ -165,6 +208,8 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                         narrateSeconds = false;
                     }
                 });
+
+                resetInfoLayout();
             }
         });
     }
@@ -186,38 +231,17 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
     }
 
     /**
-     *
+     * Narrate routine entry
      */
     public synchronized void narrate() {
         Log.v(Hercules.TAG, "Narrating routing entry " + currentRoutineEntryStage);
 
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textViewRoutineEntryTtgpLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-                textViewRoutineEntryTtgp.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+        if (!RoutineOrchestratorImpl.getInstance().isPlaying())
+            return;
 
-                textViewRoutineEntrySetLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-                textViewRoutineEntrySet.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-
-                textViewRoutineEntryRestLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-                textViewRoutineEntryRest.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-
-                textViewRoutineEntryTtgpLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
-                textViewRoutineEntryTtgp.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
-
-                textViewRoutineEntrySetLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
-                textViewRoutineEntrySet.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
-
-                textViewRoutineEntryRestLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
-                textViewRoutineEntryRest.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
-
-            }
-        });
-
+        resetInfoLayout();
         switch (currentRoutineEntryStage) {
             case RES_INITIATE_SPEECH:
-                Log.v(Hercules.TAG, "Initiating " + routineEntry.getName());
                 HerculesSpeechEngine.speak("Lets start with " + routineEntry.getName(), this);
                 break;
             case RES_GET_IN_POSITION_SPEECH:
@@ -236,16 +260,6 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     });
 
                     HerculesSpeechEngine.speak("Beginning set " + (currentRoutineEntrySetNumber + 1) + " for " + routineEntry.getName() + " in " + routineEntry.getTimeToGetInPosition() + " seconds. Get in position.", this);
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (routineEntry.getStandardNumberOfSets() > 0) {
-                                textViewRoutineEntrySetNumber.setText("Set " + (currentRoutineEntrySetNumber + 1) + " of " + routineEntry.getStandardNumberOfSets());
-                            } else {
-                                textViewRoutineEntrySetNumber.setText("");
-                            }
-                        }
-                    });
                 } else {
                     currentRoutineEntryStage = RES_SET_SPEECH;
                     narrate();
@@ -343,6 +357,48 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 }
                 break;
         }
+
+        resetSetDecrementIncrementButtons();
+    }
+
+    /**
+     * Reset text in info layout
+     */
+    private void resetInfoLayout() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textViewRoutineEntryTtgpLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+                textViewRoutineEntryTtgp.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+
+                textViewRoutineEntrySetLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+                textViewRoutineEntrySet.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+
+                textViewRoutineEntryRestLabel.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+                textViewRoutineEntryRest.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+
+                textViewRoutineEntryTtgpLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
+                textViewRoutineEntryTtgp.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
+
+                textViewRoutineEntrySetLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
+                textViewRoutineEntrySet.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
+
+                textViewRoutineEntryRestLabel.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
+                textViewRoutineEntryRest.setTextSize(activity.getResources().getDimension(R.dimen.player_activity_info));
+
+                if (routineEntry.getStandardNumberOfSets() > 0) {
+                    textViewRoutineEntrySetNumber.setText("Set " + (currentRoutineEntrySetNumber + 1) + " of " + routineEntry.getStandardNumberOfSets());
+                    imageButtonPreviousSet.setVisibility(View.VISIBLE);
+                    imageButtonNextSet.setVisibility(View.VISIBLE);
+                } else {
+                    textViewRoutineEntrySetNumber.setText("");
+                    imageButtonPreviousSet.setVisibility(View.INVISIBLE);
+                    imageButtonNextSet.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+
     }
 
     /**
@@ -370,31 +426,31 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     public void run() {
 
                         if (!RoutineOrchestratorImpl.getInstance().isPlaying()) {
-                            repetionsTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
-                            repetionsView.setColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
-                            repetionsTextView.setText("--");
-                            repetionsView.setProgressWithAnimation(0, 1000);
+                            textViewRepetitionsText.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                            repetitionsView.setColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                            textViewRepetitionsText.setText("--");
+                            repetitionsView.setProgressWithAnimation(0, 1000);
                             return;
                         }
 
                         if (!mute && !narrateSeconds) {
-                            repetionsTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary));
-                            repetionsView.setColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+                            textViewRepetitionsText.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+                            repetitionsView.setColor(ContextCompat.getColor(activity, R.color.colorPrimary));
                             HerculesSpeechEngine.skippableSpeak(String.valueOf(timerCount[0]));
                         } else {
-                            repetionsTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
-                            repetionsView.setColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                            textViewRepetitionsText.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                            repetitionsView.setColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                         }
-                        repetionsTextView.setText(String.valueOf(timerCount[0] + "\nReps"));
-                        repetionsView.setProgressMax(totalRepetitions);
-                        repetionsView.setProgressWithAnimation(timerCount[0], delay);
+                        textViewRepetitionsText.setText(String.valueOf(timerCount[0] + "\nReps"));
+                        repetitionsView.setProgressMax(totalRepetitions);
+                        repetitionsView.setProgressWithAnimation(timerCount[0], delay);
 
                         timerCount[0]--;
                         if (timerCount[0] > 0) {
                             updateRepetitionsCounter(mute, totalRepetitions, timerCount[0], delay);
                         } else {
-                            repetionsTextView.setText("--");
-                            repetionsView.setProgressWithAnimation(0, delay);
+                            textViewRepetitionsText.setText("--");
+                            repetitionsView.setProgressWithAnimation(0, delay);
                         }
                     }
                 });
@@ -427,22 +483,28 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     public void run() {
 
                         if (!RoutineOrchestratorImpl.getInstance().isPlaying()) {
-                            timerTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                            textViewTimerText.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                             timerView.setColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
-                            timerTextView.setText("--");
+                            textViewTimerText.setText("--");
                             timerView.setProgressWithAnimation(0, 1000);
                             return;
                         }
 
                         if (!mute && narrateSeconds) {
-                            timerTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+                            textViewTimerText.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary));
                             timerView.setColor(ContextCompat.getColor(activity, R.color.colorPrimary));
-                            HerculesSpeechEngine.skippableSpeak(String.valueOf(timerCount[0]));
+                            if (timerCount[0] < 15) { // count all seconds if 15 seconds or less
+                                HerculesSpeechEngine.skippableSpeak(String.valueOf(timerCount[0]));
+                            } else {
+                                if (timerCount[0] % 10 == 0) {  //count every 10 seconds
+                                    HerculesSpeechEngine.skippableSpeak(String.valueOf(timerCount[0]));
+                                }
+                            }
                         } else {
-                            timerTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                            textViewTimerText.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                             timerView.setColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                         }
-                        timerTextView.setText(String.valueOf(timerCount[0] + "\nSeconds"));
+                        textViewTimerText.setText(String.valueOf(timerCount[0] + "\nSeconds"));
                         timerView.setProgressMax(totalSeconds);
                         timerView.setProgressWithAnimation(timerCount[0], delay);
 
@@ -459,6 +521,56 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         }, delay);
     }
 
+    /**
+     * Begin next set
+     */
+    public synchronized void previousSet() {
+        if (currentRoutineEntrySetNumber > 0) {
+            resetSpeechEngine();
+            resetTimers();
+            currentRoutineEntrySetNumber--;
+            currentRoutineEntryStage = RES_GET_IN_POSITION_SPEECH;
+            narrate();
+        }
+
+        resetSetDecrementIncrementButtons();
+    }
+
+    /**
+     * Begin next set
+     */
+    public synchronized void nextSet() {
+        if (currentRoutineEntrySetNumber < (routineEntry.getStandardNumberOfSets() - 1)) {
+            resetSpeechEngine();
+            resetTimers();
+            currentRoutineEntrySetNumber++;
+            currentRoutineEntryStage = RES_GET_IN_POSITION_SPEECH;
+            narrate();
+        }
+        resetSetDecrementIncrementButtons();
+    }
+
+    /**
+     * Change color of minus / plus set icons
+     */
+    private void resetSetDecrementIncrementButtons() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (currentRoutineEntrySetNumber <= 0) {
+                    imageButtonPreviousSet.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_minus_icon_gray_0p_padding));
+                } else {
+                    imageButtonPreviousSet.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_minus_icon));
+                }
+
+                if (currentRoutineEntrySetNumber >= (routineEntry.getStandardNumberOfSets() - 1)) {
+                    imageButtonNextSet.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_add_icon_gray_0p_padding));
+                } else {
+                    imageButtonNextSet.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_add_icon));
+                }
+            }
+        });
+    }
     /**
      * @param routineEntry
      */

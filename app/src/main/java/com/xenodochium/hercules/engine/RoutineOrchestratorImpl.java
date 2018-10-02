@@ -35,8 +35,8 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
     private boolean isPlaying = false;
     private CircularProgressBar timerView, repetitionsView;
     private Activity activity;
-
-    private ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind;
+    private boolean isLooping = false;
+    private ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind, imageButtonPreviousSet, imageButtonNextSet, imageButtonLoop;
 
     private RoutineOrchestratorImpl() {
         routineEntryPlayList = new ArrayList<>();
@@ -75,6 +75,9 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
      * @param imageButtonPlay
      * @param imageButtonRewind
      * @param imageButtonForward
+     * @param imageButtonPreviousSet
+     * @param imageButtonNextSet
+     * @param imageButtonLoop
      */
     public void initiate(Activity activity, List<RoutineEntry> routineEntryPlayList,
                          CircularProgressBar timerView,
@@ -91,7 +94,10 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
                          TextView textViewRepetitionsText,
                          ImageButton imageButtonPlay,
                          ImageButton imageButtonRewind,
-                         ImageButton imageButtonForward) {
+                         ImageButton imageButtonForward,
+                         ImageButton imageButtonPreviousSet,
+                         ImageButton imageButtonNextSet,
+                         ImageButton imageButtonLoop) {
         this.activity = activity;
         this.routineEntryPlayList = routineEntryPlayList;
         this.timerView = timerView;
@@ -109,6 +115,22 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
         this.imageButtonPlay = imageButtonPlay;
         this.imageButtonForward = imageButtonForward;
         this.imageButtonRewind = imageButtonRewind;
+        this.imageButtonPreviousSet = imageButtonPreviousSet;
+        this.imageButtonNextSet = imageButtonNextSet;
+        this.imageButtonLoop = imageButtonLoop;
+
+        if (isLooping) {
+            imageButtonLoop.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_loop_icon));
+        } else {
+            imageButtonLoop.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_loop_icon_gray_5p_padding));
+        }
+
+        if (routineEntryPlayList.size() > 0) {
+            RoutineEntryNarratorImpl.getInstance().initiate(activity, routineEntryPlayList.get(0), timerView, repetitionsView,
+                    textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
+                    textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest,
+                    textViewRoutineEntrySetNumber, textViewTimerText, textViewRepetitionsText, imageButtonPreviousSet, imageButtonNextSet);
+        }
     }
 
     @Override
@@ -130,10 +152,12 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
      * Play previous
      */
     public void previous() {
-        if (currentlyPlayingRoutineEntryNumber > -1) {
+        if (currentlyPlayingRoutineEntryNumber > 0) {
             currentlyPlayingRoutineEntryNumber--;
             play();
         }
+
+        setForwardRewindButtonsDrawable();
     }
 
     /**
@@ -143,6 +167,27 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
         if (currentlyPlayingRoutineEntryNumber < routineEntryPlayList.size()) {
             currentlyPlayingRoutineEntryNumber++;
             play();
+        }
+
+        setForwardRewindButtonsDrawable();
+    }
+
+    /**
+     * Change color of forward / rewind button when not relevant.
+     * For example - rewind not relevant at beginning of play list. Hence color changes to gray.
+     */
+    private void setForwardRewindButtonsDrawable() {
+
+        if (currentlyPlayingRoutineEntryNumber <= 0) {
+            imageButtonRewind.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_rewind_icon_gray_n5p_padding));
+        } else {
+            imageButtonRewind.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_rewind_icon_lime_green));
+        }
+
+        if (currentlyPlayingRoutineEntryNumber >= routineEntryPlayList.size()) {
+            imageButtonForward.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_forward_icon_gray_n5p_padding));
+        } else {
+            imageButtonForward.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_forward_icon_lime_green));
         }
     }
 
@@ -171,6 +216,7 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
             Random random = new Random();
             Log.v(Hercules.TAG, "Initiating");
             HerculesSpeechEngine.speak(initiation.get(random.nextInt(initiation.size())), this);
+
         } else if (currentlyPlayingRoutineEntryNumber < routineEntryPlayList.size()) {
             Log.v(Hercules.TAG, "Playing routine entry " + currentlyPlayingRoutineEntryNumber);
             activity.runOnUiThread(new Runnable() {
@@ -194,15 +240,21 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
                     }
                 }
             });
-            RoutineEntryNarratorImpl.getInstance().initiate(activity, routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber), timerView, repetitionsView,
-                    textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
-                    textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest,
-                    textViewRoutineEntrySetNumber, textViewTimerText, textViewRepetitionsText);
+
+            RoutineEntryNarratorImpl.getInstance().setRoutineEntry(routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber));
             RoutineEntryNarratorImpl.getInstance().narrate();
+
         } else {
-            HerculesSpeechEngine.waitAndSpeak("Routine over");
-            pause();
+            if (isLooping) {
+                currentlyPlayingRoutineEntryNumber = 0;
+                play();
+            } else {
+                HerculesSpeechEngine.waitAndSpeak("Routine over");
+                pause();
+            }
         }
+
+        setForwardRewindButtonsDrawable();
     }
 
     /**
@@ -237,5 +289,17 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
 
     public void setCurrentlyPlayingRoutineEntryNumber(int currentlyPlayingRoutineEntryNumber) {
         this.currentlyPlayingRoutineEntryNumber = currentlyPlayingRoutineEntryNumber;
+    }
+
+    /**
+     * Loop
+     */
+    public void loop() {
+        isLooping = !isLooping;
+        if (isLooping) {
+            imageButtonLoop.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_loop_icon));
+        } else {
+            imageButtonLoop.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_loop_icon_gray_5p_padding));
+        }
     }
 }

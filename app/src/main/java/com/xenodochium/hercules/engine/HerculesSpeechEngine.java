@@ -31,7 +31,7 @@ public class HerculesSpeechEngine {
                     //find male voice if exists
                     while (voices.hasNext()) {
                         Voice voice = voices.next();
-                        String voiceName = voice.getName().toString();
+                        String voiceName = voice.getName();
 
                         if (voiceName == "en-gb-x-gbd-local") {
                             tempVoice = voice;
@@ -109,6 +109,8 @@ public class HerculesSpeechEngine {
     public synchronized static void stopSpeaking() {
         if (tts != null)
             tts.stop();
+
+        tts.setOnUtteranceProgressListener(null);
     }
 
     /**
