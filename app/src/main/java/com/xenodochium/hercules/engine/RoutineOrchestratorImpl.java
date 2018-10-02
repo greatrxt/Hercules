@@ -126,6 +126,7 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
         }
 
         if (routineEntryPlayList.size() > 0) {
+            textViewRoutineEntryName.setText(String.valueOf(routineEntryPlayList.get(0).getName()));
             RoutineEntryNarratorImpl.getInstance().initiate(activity, routineEntryPlayList.get(0), timerView, repetitionsView,
                     textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
                     textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest,

@@ -11,6 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.xenodochium.hercules.R;
+import com.xenodochium.hercules.model.BodyPart;
+import com.xenodochium.hercules.model.Routine;
 
 import java.util.List;
 
@@ -60,6 +62,20 @@ public class StandardHomeListItemAdapter<T> extends BaseAdapter {
                     ((OnItemClickListener) fragment).onItemPlay(getItem(position));
                 }
             });
+            
+            if (objects.get(position) instanceof BodyPart) {
+                BodyPart bodyPart = (BodyPart) objects.get(position);
+                if (bodyPart.getLinkedWorkouts().size() == 0) {
+                    (view.findViewById(R.id.image_button_play)).setVisibility(View.GONE);
+                }
+            }
+
+            if (objects.get(position) instanceof Routine) {
+                Routine routine = (Routine) objects.get(position);
+                if (routine.getLinkedRoutineEntries().size() == 0) {
+                    (view.findViewById(R.id.image_button_play)).setVisibility(View.GONE);
+                }
+            }
 
             (view.findViewById(R.id.image_button_delete)).setOnClickListener(new View.OnClickListener() {
                 @Override
