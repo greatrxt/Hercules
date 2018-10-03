@@ -19,6 +19,7 @@ import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
 import com.xenodochium.hercules.model.BodyPart;
 import com.xenodochium.hercules.model.Workout;
+import com.xenodochium.hercules.model.WorkoutDao;
 
 import java.util.List;
 
@@ -74,12 +75,38 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
      * Initialize all views
      */
     private void initializeViews() {
+        Workout workout = new Workout();
+
+        WorkoutDao workoutDao = Hercules.getInstance().getDaoSession().getWorkoutDao();
+        List<Workout> workoutList = workoutDao.queryBuilder().orderDesc(WorkoutDao.Properties.BodyPartId).limit(1).list();
+
+        if (workoutList.size() == 1) {
+            Workout lastWorkout = workoutList.get(0);
+            workout.setTimeToGetInPosition(lastWorkout.getTimeToGetInPosition());
+            workout.setDuration(lastWorkout.getDuration());
+            workout.setStandardNumberOfSets(lastWorkout.getStandardNumberOfSets());
+            workout.setStandardNumberOfRepetitions(lastWorkout.getStandardNumberOfRepetitions());
+            workout.setRestTimeAfterExercise(lastWorkout.getRestTimeAfterExercise());
+        } else {
+            workout.setTimeToGetInPosition(20);
+            workout.setDuration(30);
+            workout.setStandardNumberOfSets(3);
+            workout.setStandardNumberOfRepetitions(15);
+            workout.setRestTimeAfterExercise(60);
+        }
+
         tilExerciseName = findViewById(R.id.til_exercise_name);
+        tilTimeToGetInPosition = findViewById(R.id.til_time_to_get_in_position);
+        tilDuration = findViewById(R.id.til_duration);
         tilNumberOfSets = findViewById(R.id.til_number_of_sets);
         tilNumberOfRepetitions = findViewById(R.id.til_repetitions);
-        tilDuration = findViewById(R.id.til_duration);
-        tilTimeToGetInPosition = findViewById(R.id.til_time_to_get_in_position);
         tilRestTimeAfterExercise = findViewById(R.id.til_rest_time_after_exercise);
+
+        tilTimeToGetInPosition.getEditText().setText(String.valueOf(workout.getStandardNumberOfSets()));
+        tilDuration.getEditText().setText(String.valueOf(workout.getDuration()));
+        tilNumberOfSets.getEditText().setText(String.valueOf(workout.getStandardNumberOfSets()));
+        tilNumberOfRepetitions.getEditText().setText(String.valueOf(workout.getStandardNumberOfRepetitions()));
+        tilRestTimeAfterExercise.getEditText().setText(String.valueOf(workout.getRestTimeAfterExercise()));
 
         checkboxCountDurationInReverse = findViewById(R.id.checkbox_count_duration_in_reverse);
         checkboxCountRepetitionsInReverse = findViewById(R.id.checkbox_count_repetitions_in_reverse);

@@ -263,7 +263,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_rewind_icon_lime_green" />
+                android:src="@drawable/ic_rewind_icon_lime_green_n10p_padding" />
 
             <ImageButton
                 android:id="@+id/image_button_play"
@@ -277,7 +277,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_forward_icon_lime_green" />
+                android:src="@drawable/ic_forward_icon_lime_green_n10p_padding" />
         </LinearLayout>
 
         <ImageButton

@@ -2,7 +2,6 @@ package com.xenodochium.hercules.engine;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -72,32 +72,31 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
     }
 
     @SuppressLint("NewApi")
-    public void setNotification(String routineEntryName) {
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager notificationManager = (NotificationManager) Hercules.getInstance().getSystemService(ns);
+    public void setNotification() {
 
-        @SuppressWarnings("deprecation")
-        Notification notification = new Notification(R.mipmap.ic_launcher, null, System.currentTimeMillis());
+        NotificationManager notificationManager = (NotificationManager) Hercules.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
 
         RemoteViews notificationView = new RemoteViews(Hercules.getInstance().getPackageName(), R.layout.notification_playback_controller);
         //the intent that is started when the notification is clicked (works)
         Intent notificationIntent = new Intent(Hercules.getInstance(), PlayerActivity.class);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(Hercules.getInstance(), 0, notificationIntent, 0);
 
-        notification.bigContentView = notificationView;
-        //notification.contentView = notificationView;
-        notification.contentIntent = pendingNotificationIntent;
-        notification.tickerText = routineEntryName;
-        notification.flags |= Notification.FLAG_NO_CLEAR;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity, "default");
+        builder.setCustomBigContentView(notificationView);
+        builder.setTicker(routineEntry.getName());
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setContentIntent(pendingNotificationIntent);
+        builder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle());
+        builder.setOngoing(true);
 
         //this is the intent that is supposed to be called when the button is clicked
         Intent playIntent = new Intent("com.xenodochium.hercules.ACTION_PLAY");
         PendingIntent pendingPlayIntent = PendingIntent.getBroadcast(Hercules.getInstance(), 100, playIntent, 0);
         notificationView.setOnClickPendingIntent(R.id.image_button_play, pendingPlayIntent);
         if (RoutineOrchestratorImpl.getInstance().isPlaying()) {
-            notificationView.setImageViewResource(R.id.image_button_play, R.drawable.ic_pause_icon_gray_n10p_padding);
+            notificationView.setImageViewResource(R.id.image_button_play, R.drawable.ic_pause_icon_gray_trim_15p_padding);
         } else {
-            notificationView.setImageViewResource(R.id.image_button_play, R.drawable.ic_play_icon_gray_n10p_padding);
+            notificationView.setImageViewResource(R.id.image_button_play, R.drawable.ic_play_icon_gray_trim_15p_padding);
         }
 
         Intent nextItemIntent = new Intent("com.xenodochium.hercules.ACTION_NEXT");
@@ -109,7 +108,8 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         notificationView.setOnClickPendingIntent(R.id.image_button_rewind, pendingPreviousItemIntent);
 
         notificationView.setTextViewText(R.id.text_view_routine_entry_name, routineEntry.getName());
-        notificationManager.notify(1, notification);
+        //notificationManager.notify(1, notification);
+        notificationManager.notify(1, builder.build());
     }
 
     /**
@@ -153,7 +153,7 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
             @Override
             public void run() {
 
-                setNotification(routineEntry.getName());
+                setNotification();
 
                 RoutineEntryNarratorImpl.this.timerView = timerView;
                 RoutineEntryNarratorImpl.this.repetitionsView = repetionsView;
@@ -684,7 +684,7 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     RoutineOrchestratorImpl.getInstance().play();
                 }
 
-                setNotification(routineEntry.getName());
+                setNotification();
             } else if (action.equalsIgnoreCase("com.xenodochium.hercules.ACTION_NEXT")) {
                 RoutineOrchestratorImpl.getInstance().next();
             } else if (action.equalsIgnoreCase("com.xenodochium.hercules.ACTION_PREVIOUS")) {

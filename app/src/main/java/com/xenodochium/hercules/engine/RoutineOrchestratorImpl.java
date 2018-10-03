@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Typeface;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -180,15 +181,15 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
     private void setForwardRewindButtonsDrawable() {
 
         if (currentlyPlayingRoutineEntryNumber <= 0) {
-            imageButtonRewind.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_rewind_icon_gray_n5p_padding));
+            imageButtonRewind.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_rewind_icon_gray_n10p_padding));
         } else {
-            imageButtonRewind.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_rewind_icon_lime_green));
+            imageButtonRewind.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_rewind_icon_lime_green_n10p_padding));
         }
 
         if (currentlyPlayingRoutineEntryNumber >= routineEntryPlayList.size()) {
-            imageButtonForward.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_forward_icon_gray_n5p_padding));
+            imageButtonForward.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_forward_icon_gray_n10p_padding));
         } else {
-            imageButtonForward.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_forward_icon_lime_green));
+            imageButtonForward.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_forward_icon_lime_green_n10p_padding));
         }
     }
 
@@ -210,16 +211,16 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
             @Override
             public void run() {
                 imageButtonPlay.setImageDrawable(activity.getDrawable(R.drawable.ic_pause_icon));
+                //KEEP SCREEN ON WHILE WORKING OUT
+                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         });
 
+
         if (currentlyPlayingRoutineEntryNumber == -1) {
             Random random = new Random();
-            Log.v(Hercules.TAG, "Initiating");
             HerculesSpeechEngine.speak(initiation.get(random.nextInt(initiation.size())), this);
-
         } else if (currentlyPlayingRoutineEntryNumber < routineEntryPlayList.size()) {
-            Log.v(Hercules.TAG, "Playing routine entry " + currentlyPlayingRoutineEntryNumber);
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -251,6 +252,10 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
                 play();
             } else {
                 HerculesSpeechEngine.waitAndSpeak("Routine over");
+
+                //NO NEED TO KEEP SCREEN ON AFTER WORKOUT
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
                 pause();
             }
         }
@@ -267,6 +272,8 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
             @Override
             public void run() {
                 imageButtonPlay.setImageDrawable(activity.getDrawable(R.drawable.ic_play_icon));
+                //NO NEED TO KEEP SCREEN ON
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         });
         HerculesSpeechEngine.stopSpeaking();
