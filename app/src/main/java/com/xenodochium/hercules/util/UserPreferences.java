@@ -81,4 +81,13 @@ public class UserPreferences {
         editor.commit();
     }
 
+
+    public static boolean isFirstTime() {
+        SharedPreferences pref = Hercules.getInstance().getApplicationContext().getSharedPreferences(HERCULES, Context.MODE_PRIVATE);
+        boolean isFirstTime = pref.getBoolean("isFirstTime", true);
+        if (isFirstTime) {
+            putBoolean("isFirstTime", false);
+        }
+        return isFirstTime;
+    }
 }

@@ -197,7 +197,10 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
             bundle.putInt("rest", Integer.parseInt(tilRestTimeAfterExercise.getEditText().getText().toString()));
         }
 
-        workout.setBodyPartId(((BodyPart) spinnerBodyPart.getSelectedItem()).getBodyPartId());
+        if (spinnerBodyPart.getSelectedItem() != null) {
+            workout.setBodyPartId(((BodyPart) spinnerBodyPart.getSelectedItem()).getBodyPartId());
+        }
+
         if (getIntent().getExtras() != null) {
             workout.setWorkoutId((Long) getIntent().getExtras().get("workoutId"));
         } else {

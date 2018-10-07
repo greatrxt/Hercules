@@ -29,6 +29,7 @@ import java.util.TimerTask;
 
 public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
+    private Toast userToast;
     private static RoutineEntryNarratorImpl routineEntryNarratorImpl;
     public static final int
             RES_INITIATE_SPEECH = -1,
@@ -83,7 +84,6 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(activity, "default");
         builder.setCustomBigContentView(notificationView);
-        builder.setTicker(routineEntry.getName());
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentIntent(pendingNotificationIntent);
         builder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle());
@@ -221,7 +221,11 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     public void onClick(View view) {
                         timerView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                         repetionsView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-                        Toast.makeText(activity, activity.getResources().getString(R.string.counting_duration), Toast.LENGTH_SHORT).show();
+                        if (userToast != null) {
+                            userToast.cancel();
+                        }
+                        userToast = Toast.makeText(activity, activity.getResources().getString(R.string.counting_duration), Toast.LENGTH_SHORT);
+                        userToast.show();
                         narrateSeconds = true;
                     }
                 });
@@ -231,7 +235,11 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                     public void onClick(View view) {
                         timerView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimaryDark));
                         repetionsView.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
-                        Toast.makeText(activity, activity.getResources().getString(R.string.counting_repetitions), Toast.LENGTH_SHORT).show();
+                        if (userToast != null) {
+                            userToast.cancel();
+                        }
+                        userToast = Toast.makeText(activity, activity.getResources().getString(R.string.counting_repetitions), Toast.LENGTH_SHORT);
+                        userToast.show();
                         narrateSeconds = false;
                     }
                 });
@@ -295,6 +303,8 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
             return;
 
         resetInfoLayout();
+        setNotification();
+
         switch (currentRoutineEntryStage) {
             case RES_INITIATE_SPEECH:
                 if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.BREAK)) {
@@ -356,7 +366,11 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
                 if (routineEntry.getRoutineEntryType().equals(RoutineEntry.RoutineEntryType.BREAK)) {
                     HerculesSpeechEngine.speak("Taking a break for " + routineEntry.getDuration() + " seconds", this);
                 } else {
-                    HerculesSpeechEngine.speak("Beginning " + routineEntry.getName() + ". " + routineEntry.getStandardNumberOfRepetitions() + " repetitions in " + routineEntry.getDuration() + " seconds", this);
+                    if (routineEntry.getStandardNumberOfRepetitions() > 0) {
+                        HerculesSpeechEngine.speak("Beginning " + routineEntry.getName() + ". " + routineEntry.getStandardNumberOfRepetitions() + " repetitions in " + routineEntry.getDuration() + " seconds", this);
+                    } else {
+                        HerculesSpeechEngine.speak("Beginning " + routineEntry.getName() + ". For " + routineEntry.getDuration() + " seconds", this);
+                    }
                 }
                 break;
             case RES_SET_TIMER:
@@ -623,6 +637,7 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
             resetTimers();
             currentRoutineEntrySetNumber--;
             currentRoutineEntryStage = RES_GET_IN_POSITION_SPEECH;
+            resetInfoLayout();
             narrate();
         }
 
@@ -638,6 +653,7 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
             resetTimers();
             currentRoutineEntrySetNumber++;
             currentRoutineEntryStage = RES_GET_IN_POSITION_SPEECH;
+            resetInfoLayout();
             narrate();
         }
         resetSetDecrementIncrementButtons();
@@ -667,6 +683,14 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
     public int getCurrentRoutineEntryStage() {
         return currentRoutineEntryStage;
+    }
+
+    /**
+     * Pause narration
+     */
+    public void pause() {
+        HerculesSpeechEngine.stopSpeaking();
+        setNotification();
     }
 
     /**

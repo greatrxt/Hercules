@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,7 +147,9 @@ public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineE
                             routineEntry.setTimeToGetInPosition(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_time_to_get_in_position)).getEditText().getText().toString()));
                         if (!((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().getText().toString().isEmpty())
                             routineEntry.setRestTimeAfterExercise(Integer.parseInt(((TextInputLayout) dialogView.findViewById(R.id.til_rest_time_after_exercise)).getEditText().getText().toString()));
-                        routineEntry.setBodyPartId(((BodyPart) ((Spinner) dialogView.findViewById(R.id.spinner_body_part)).getSelectedItem()).getBodyPartId());
+                        if ((((Spinner) dialogView.findViewById(R.id.spinner_body_part)).getSelectedItem()) != null) {
+                            routineEntry.setBodyPartId(((BodyPart) ((Spinner) dialogView.findViewById(R.id.spinner_body_part)).getSelectedItem()).getBodyPartId());
+                        }
                         notifyDataSetChanged();
                         alertDialog.dismiss();
                     }
@@ -163,6 +166,7 @@ public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineE
             } else if (context instanceof PlayerActivity) {
                 RoutineOrchestratorImpl.getInstance().setCurrentlyPlayingRoutineEntryNumber(bindPosition);
                 RoutineOrchestratorImpl.getInstance().play();
+                ((AppCompatActivity) context).getSupportFragmentManager().findFragmentById(R.id.list_fragment_container).getFragmentManager().popBackStack();
             }
         }
 

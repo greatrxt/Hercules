@@ -2,6 +2,7 @@ package com.xenodochium.hercules.ui;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.engine.RoutineEntryNarratorImpl;
 import com.xenodochium.hercules.engine.RoutineOrchestratorImpl;
 import com.xenodochium.hercules.model.RoutineEntry;
+import com.xenodochium.hercules.service.OnClearFromRecentService;
 
 import java.util.List;
 
@@ -29,15 +31,19 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getIntent().getExtras() == null) {
+            onDestroy();
+            return;
+        }
         setContentView(R.layout.activity_player);
         initializeViews();
+        startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager notificationManager = (NotificationManager) getSystemService(ns);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         RoutineOrchestratorImpl.getInstance().pause();
     }

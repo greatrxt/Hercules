@@ -5,6 +5,6 @@
     <dimen name="drag_drop_list_item_font_size">18sp</dimen>
     <dimen name="default_stroke_width">15dp</dimen>
     <dimen name="default_background_stroke_width">7dp</dimen>
-    <dimen name="player_activity_info">8sp</dimen>
-    <dimen name="player_activity_info_large">10sp</dimen>
+    <dimen name="player_activity_info">7sp</dimen>
+    <dimen name="player_activity_info_large">9sp</dimen>
 </resources>

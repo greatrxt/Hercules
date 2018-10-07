@@ -104,6 +104,24 @@ public class Workout implements Serializable { //implementing serializable so th
     public Workout() {
     }
 
+    public Workout(Long workoutId, String name, int duration, long bodyPartId) {
+        this.workoutId = workoutId;
+        this.name = name;
+        this.duration = duration;
+        this.bodyPartId = bodyPartId;
+    }
+
+    public Workout(Long workoutId, String name, int standardNumberOfRepetitions, int standardNumberOfSets, int duration, int timeToGetInPosition, int restTimeAfterExercise, long bodyPartId) {
+        this.workoutId = workoutId;
+        this.name = name;
+        this.standardNumberOfRepetitions = standardNumberOfRepetitions;
+        this.standardNumberOfSets = standardNumberOfSets;
+        this.duration = duration;
+        this.timeToGetInPosition = timeToGetInPosition;
+        this.restTimeAfterExercise = restTimeAfterExercise;
+        this.bodyPartId = bodyPartId;
+    }
+
     public Workout copy() {  //creating copy to resolve disappearing drag drop item issue in RoutingActivity
 
         Workout workout = new Workout();

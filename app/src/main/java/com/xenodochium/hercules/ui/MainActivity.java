@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Used to select an item programmatically
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
+
     }
 
     @Override

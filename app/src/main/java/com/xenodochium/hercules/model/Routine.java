@@ -39,6 +39,11 @@ public class Routine implements Serializable { //implementing serializable so th
             Hercules.getInstance().getDaoSession().clear();
         }
     }
+
+    public void setLinkedRoutineEntries(List<RoutineEntry> linkedRoutineEntries) {
+        this.linkedRoutineEntries = linkedRoutineEntries;
+    }
+
     /**
      * Used to resolve relations
      */

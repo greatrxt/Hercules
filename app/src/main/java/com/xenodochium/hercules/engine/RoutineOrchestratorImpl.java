@@ -196,6 +196,7 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
     /**
      * Start playing
      */
+    private RoutineEntry currentRoutineEntry;
     public void play() {
         Log.v(Hercules.TAG, "Playing routine");
         isPlaying = true;
@@ -221,10 +222,18 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
             Random random = new Random();
             HerculesSpeechEngine.speak(initiation.get(random.nextInt(initiation.size())), this);
         } else if (currentlyPlayingRoutineEntryNumber < routineEntryPlayList.size()) {
+            if (currentRoutineEntry != null) {
+                if (!currentRoutineEntry.equals(routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber))) {
+                    currentRoutineEntry = routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber);
+                    RoutineEntryNarratorImpl.getInstance().setRoutineEntry(currentRoutineEntry);
+                }
+            } else {
+                currentRoutineEntry = routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber);
+            }
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    textViewRoutineEntryName.setText(String.valueOf(routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber).getName()));
+                    textViewRoutineEntryName.setText(String.valueOf(currentRoutineEntry.getName()));
                     if (dragAndDropRoutineEntryItemAdapter != null) {   //make selected item bold if adapter is available
                         Iterator<Integer> viewsIterator = dragAndDropRoutineEntryItemAdapter.getViewHolderMap().keySet().iterator();
                         while (viewsIterator.hasNext()) {
@@ -243,7 +252,7 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
                 }
             });
 
-            RoutineEntryNarratorImpl.getInstance().setRoutineEntry(routineEntryPlayList.get(currentlyPlayingRoutineEntryNumber));
+
             RoutineEntryNarratorImpl.getInstance().narrate();
 
         } else {
@@ -274,9 +283,9 @@ public class RoutineOrchestratorImpl extends UtteranceProgressListener implement
                 imageButtonPlay.setImageDrawable(activity.getDrawable(R.drawable.ic_play_icon));
                 //NO NEED TO KEEP SCREEN ON
                 activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                RoutineEntryNarratorImpl.getInstance().pause();
             }
         });
-        HerculesSpeechEngine.stopSpeaking();
     }
 
     public boolean isPlaying() {

@@ -1,17 +1,15 @@
 package com.xenodochium.hercules.application;
 
 import android.app.Application;
+import android.app.NotificationManager;
+import android.content.Context;
 
 import com.xenodochium.hercules.engine.HerculesSpeechEngine;
-import com.xenodochium.hercules.model.BodyPart;
 import com.xenodochium.hercules.model.DaoMaster;
 import com.xenodochium.hercules.model.DaoSession;
+import com.xenodochium.hercules.util.InitialData;
 
 import org.greenrobot.greendao.database.Database;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class Hercules extends Application {
 
@@ -37,7 +35,7 @@ public class Hercules extends Application {
         // Database db = helper.getEncryptedWritableDb("encryption-key");
 
         daoSession = new DaoMaster(db).newSession();
-        insertBasicData();
+        InitialData.insertBasicDataIfFirstTime(daoSession);
         HerculesSpeechEngine.findMaleVoice();
     }
 
@@ -45,24 +43,10 @@ public class Hercules extends Application {
         return daoSession;
     }
 
-    public void insertBasicData() {
-        List<String> bodyPartsList = new ArrayList<>();
-        bodyPartsList.add("Full Body");
-        bodyPartsList.add("Chest");
-        bodyPartsList.add("Back");
-        bodyPartsList.add("Shoulders");
-        bodyPartsList.add("Biceps");
-        bodyPartsList.add("Triceps");
-        bodyPartsList.add("Legs");
-
-        Iterator<String> bodyPartsIterator = bodyPartsList.iterator();
-        long i = 1;
-        while (bodyPartsIterator.hasNext()) {
-            BodyPart bodyPart = new BodyPart();
-            bodyPart.setBodyPartId(i);
-            bodyPart.setName(bodyPartsIterator.next());
-            daoSession.getBodyPartDao().insertOrReplace(bodyPart);
-            i++;
-        }
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 }
