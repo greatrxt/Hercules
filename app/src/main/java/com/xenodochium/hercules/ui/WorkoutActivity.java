@@ -1,8 +1,6 @@
 package com.xenodochium.hercules.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
@@ -22,6 +21,8 @@ import com.xenodochium.hercules.model.Workout;
 import com.xenodochium.hercules.model.WorkoutDao;
 
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 

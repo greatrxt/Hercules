@@ -1,9 +1,6 @@
 package com.xenodochium.hercules.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +11,23 @@ import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.model.BodyPart;
 import com.xenodochium.hercules.model.Routine;
 
+import java.util.HashMap;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public class StandardHomeListItemAdapter<T> extends BaseAdapter {
 
     Fragment fragment;
     List<T> objects;
+    HashMap<Integer, View> viewMap;
 
     public StandardHomeListItemAdapter(Fragment fragment, @NonNull List objects) {
         this.fragment = fragment;
         this.objects = objects;
+        viewMap = new HashMap<>();
     }
 
     @Override
@@ -44,6 +48,7 @@ public class StandardHomeListItemAdapter<T> extends BaseAdapter {
     @NonNull
     @Override
     public View getView(final int position, @Nullable View view, @NonNull ViewGroup parent) {
+        view = viewMap.get(position);
         if (view == null) {
             LayoutInflater layoutInflater = (LayoutInflater) fragment.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.standard_list_item, null);
@@ -83,6 +88,7 @@ public class StandardHomeListItemAdapter<T> extends BaseAdapter {
                     ((OnItemClickListener) fragment).onItemDelete(getItem(position));
                 }
             });
+            viewMap.put(position, view);
         }
         return view;
     }
@@ -93,5 +99,14 @@ public class StandardHomeListItemAdapter<T> extends BaseAdapter {
         void onItemPlay(Object selectedItem);
 
         void onItemDelete(Object selectedItem);
+    }
+
+    /**
+     *
+     * @param position
+     * @return
+     */
+    public View getChildAtPosition(int position){
+        return viewMap.get(position);
     }
 }

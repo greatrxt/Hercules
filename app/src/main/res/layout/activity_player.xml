@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/text_view_routine_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginTop="25dp"
@@ -15,6 +15,17 @@
         android:textColor="@color/colorPrimary"
         android:textSize="25sp"
         android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/button_help_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_alignTop="@id/text_view_routine_name"
+        android:layout_alignBottom="@+id/text_view_routine_name"
+        android:background="@color/white"
+        android:src="@drawable/ic_question_gray_0p"/>
 
     <LinearLayout
         android:id="@+id/layout_info"
@@ -142,15 +153,19 @@
         android:id="@+id/layout_timer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/layout_routine_entry_set_number"
+        android:layout_below="@+id/layout_info"
         android:layout_centerInParent="true"
         android:layout_margin="16dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <RelativeLayout
+            android:id="@+id/layout_repetitions_counter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center">
+            android:gravity="right">
 
             <TextView
                 android:id="@+id/text_view_repetitions_text"
@@ -178,10 +193,11 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/layout_seconds_counter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center">
+            android:gravity="left">
 
             <TextView
                 android:id="@+id/text_view_timer_text"
@@ -214,7 +230,7 @@
         android:id="@+id/layout_routine_entry_set_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_timer"
+        android:layout_above="@+id/layout_controls"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -247,7 +263,7 @@
         android:id="@+id/layout_controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_routine_entry_set_number"
+        android:layout_above="@+id/image_button_slider_toggle"
         android:layout_margin="15dp"
         android:gravity="center"
         android:orientation="vertical">
@@ -289,6 +305,17 @@
             android:src="@drawable/ic_loop_icon" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+        <LinearLayout
+            android:id="@+id/location_image_button_slider_toggle"
+            android:orientation="vertical"
+            android:layout_width="40dp"
+            android:layout_height="40dp"></LinearLayout>
+    </LinearLayout>
     <ImageButton
         android:id="@+id/image_button_slider_toggle"
         android:layout_width="match_parent"

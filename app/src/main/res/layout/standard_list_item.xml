@@ -5,10 +5,10 @@
 
     <TextView
         android:id="@+id/text_view_list_item_label"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/image_button_play"
         android:gravity="center_vertical"
+        android:layout_alignParentLeft="true"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
@@ -20,7 +20,6 @@
         android:layout_height="match_parent"
         android:layout_toLeftOf="@+id/image_button_delete"
         android:backgroundTint="@android:color/transparent"
-        android:paddingRight="-1dp"
         android:src="@drawable/ic_play_icon_n5p_padding" />
 
     <ImageButton
@@ -29,6 +28,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
+        android:layout_alignParentEnd="true"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_trash_icon_gray_0p_padding" />
 </RelativeLayout>

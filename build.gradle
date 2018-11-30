@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
         classpath 'com.google.gms:google-services:4.0.2' // add plugin
         // Check for v3.1.2 or higher
@@ -32,6 +32,9 @@ allprojects {
         jcenter()
         maven {
             url 'https://maven.google.com/'
+        }
+        maven {
+            url "https://jitpack.io"
         }
     }
 }

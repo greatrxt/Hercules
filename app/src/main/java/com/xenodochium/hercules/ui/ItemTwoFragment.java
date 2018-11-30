@@ -3,14 +3,13 @@ package com.xenodochium.hercules.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.adapter.StandardHomeListItemAdapter;
 import com.xenodochium.hercules.application.Hercules;
@@ -20,10 +19,14 @@ import com.xenodochium.hercules.model.RoutineEntry;
 import java.io.Serializable;
 import java.util.List;
 
-public class ItemTwoFragment extends Fragment implements View.OnClickListener, StandardHomeListItemAdapter.OnItemClickListener {
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
+public class ItemTwoFragment extends Fragment implements View.OnClickListener, StandardHomeListItemAdapter.OnItemClickListener, HerculesHomeFragment {
     private ListView listViewRoutine;
     private View fragmentView;
     private FloatingActionButton buttonAddRoutine;
+    public ImageButton buttonHelpWorkout;
 
     public static ItemTwoFragment newInstance() {
         ItemTwoFragment fragment = new ItemTwoFragment();
@@ -41,7 +44,9 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
     public void populateRoutineListView() {
         List<Routine> routineList = Hercules.getInstance().getDaoSession().getRoutineDao().loadAll();
         StandardHomeListItemAdapter<Routine> dataAdapter = new StandardHomeListItemAdapter<>(this, routineList);
-        listViewRoutine.setAdapter(dataAdapter);
+        if(listViewRoutine!=null) {
+            listViewRoutine.setAdapter(dataAdapter);
+        }
     }
 
     @Override
@@ -57,14 +62,18 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
         buttonAddRoutine = fragmentView.findViewById(R.id.button_add_routine);
         buttonAddRoutine.setOnClickListener(this);
         populateRoutineListView();
-
     }
+
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_add_routine:
                 startActivity(new Intent(getActivity(), RoutineActivity.class));
+                break;
+            case R.id.button_help_workout:
+                new ShowcaseHelper.WorkoutHelperBuilder(getActivity(), listViewRoutine,
+                        buttonAddRoutine, buttonHelpWorkout).startShowcase(String.valueOf(System.currentTimeMillis()) + "_add");
                 break;
         }
     }
@@ -106,5 +115,10 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
                 })
                 //.setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    public void onFragmentSelected() {
+        populateRoutineListView();
     }
 }

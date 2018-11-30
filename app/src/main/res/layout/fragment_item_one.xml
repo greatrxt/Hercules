@@ -15,7 +15,18 @@
         android:textSize="25sp"
         android:textStyle="bold" />
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageButton
+        android:id="@+id/button_help_workout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_alignTop="@id/text_view_exercise"
+        android:layout_alignBottom="@+id/text_view_exercise"
+        android:background="@color/white"
+        android:src="@drawable/ic_question_gray_0p"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_exercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

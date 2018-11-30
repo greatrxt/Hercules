@@ -9,8 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -26,6 +24,9 @@ import com.xenodochium.hercules.ui.PlayerActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
 
@@ -86,7 +87,7 @@ public class RoutineEntryNarratorImpl extends UtteranceProgressListener {
         builder.setCustomBigContentView(notificationView);
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentIntent(pendingNotificationIntent);
-        builder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle());
+        //builder.setStyle(new NotificationCompat.MediaStyle());
         builder.setOngoing(true);
 
         //this is the intent that is supposed to be called when the button is clicked

@@ -4,8 +4,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,9 +17,12 @@ import com.xenodochium.hercules.service.OnClearFromRecentService;
 
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind, imageButtonPreviousSet, imageButtonNextSet, imageButtonLoop;
+    private ImageButton imageButtonPlay, imageButtonForward, imageButtonRewind, imageButtonPreviousSet, imageButtonNextSet, imageButtonLoop, imageButtonHelp;
     private TextView textViewRoutineName, textViewRoutineEntryName, textViewTimerText, textViewRepetitionsText, textViewRoutineEntrySetNumber,
             textViewRoutineEntryTtgpLabel, textViewRoutineEntrySetLabel, textViewRoutineEntryRestLabel,
             textViewRoutineEntryTtgp, textViewRoutineEntrySet, textViewRoutineEntryRest;
@@ -90,6 +91,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         imageButtonPreviousSet = findViewById(R.id.image_button_previous_set);
         imageButtonNextSet = findViewById(R.id.image_button_next_set);
         imageButtonLoop = findViewById(R.id.image_button_loop);
+        imageButtonHelp = findViewById(R.id.button_help_player);
 
         imageButtonPlay.setOnClickListener(this);
         imageButtonForward.setOnClickListener(this);
@@ -98,6 +100,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         imageButtonPreviousSet.setOnClickListener(this);
         imageButtonNextSet.setOnClickListener(this);
         imageButtonLoop.setOnClickListener(this);
+
+        imageButtonHelp.setOnClickListener(this);
 
         textViewRoutineEntryName.setOnClickListener(this);
         RoutineOrchestratorImpl.getInstance().initiate(this, (List<RoutineEntry>) getIntent().getExtras().getSerializable("workoutList"),
@@ -110,6 +114,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 imageButtonPlay, imageButtonRewind, imageButtonForward, imageButtonPreviousSet, imageButtonNextSet, imageButtonLoop);
 
         RoutineOrchestratorImpl.getInstance().play();
+
     }
 
     /**
@@ -129,6 +134,17 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.button_help_player:
+                RoutineOrchestratorImpl.getInstance().pause();
+
+                new ShowcaseHelper.PlayerHelperBuilder(PlayerActivity.this,
+                        findViewById(R.id.layout_info),
+                        findViewById(R.id.layout_repetitions_counter),
+                        findViewById(R.id.layout_seconds_counter),
+                        findViewById(R.id.layout_controls),
+                        findViewById(R.id.location_image_button_slider_toggle))
+                        .startShowcase(System.currentTimeMillis() + "_layoutInfo");
+                break;
             case R.id.text_view_routine_entry_name:
                 playListFragmentUp();
                 break;

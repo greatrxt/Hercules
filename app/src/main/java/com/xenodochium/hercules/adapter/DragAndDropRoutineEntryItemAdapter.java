@@ -2,10 +2,6 @@ package com.xenodochium.hercules.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.woxthebox.draglistview.DragItemAdapter;
 import com.xenodochium.hercules.R;
 import com.xenodochium.hercules.application.Hercules;
@@ -26,6 +23,10 @@ import com.xenodochium.hercules.ui.RoutineActivity;
 
 import java.util.HashMap;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DragAndDropRoutineEntryItemAdapter extends DragItemAdapter<RoutineEntry, DragAndDropRoutineEntryItemAdapter.ViewHolder> {
 

@@ -3,14 +3,15 @@
 package com.xenodochium.hercules.ui;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.xenodochium.hercules.R;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frame_layout, selectedFragment);
                         transaction.commit();
+
+                        ((HerculesHomeFragment) selectedFragment).onFragmentSelected();
+
                         return true;
                     }
                 });
@@ -51,19 +55,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Used to select an item programmatically
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
-
     }
 
+    /**
+     * Refreshes list of items after save operation
+     */
     @Override
     protected void onResume() {
         super.onResume();
         Fragment selectedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
-        if (selectedFragment instanceof ItemOneFragment) {
-            ((ItemOneFragment) selectedFragment).populateWorkoutListView();
-        } else if (selectedFragment instanceof ItemTwoFragment) {
-            ((ItemTwoFragment) selectedFragment).populateRoutineListView();
-        } else if (selectedFragment instanceof ItemThreeFragment) {
-
-        }
+        ((HerculesHomeFragment) selectedFragment).onFragmentSelected();
     }
 }

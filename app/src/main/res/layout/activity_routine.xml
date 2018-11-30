@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,20 +21,20 @@
             android:textSize="25sp"
             android:textStyle="bold" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_routine_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_view_create_routine"
             android:layout_marginBottom="@dimen/edit_text_bottom_margin">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/name"
                 android:inputType="textPersonName|textCapSentences" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.woxthebox.draglistview.DragListView
             android:id="@+id/drag_list_view_routine"
@@ -143,4 +143,4 @@
                 android:textColor="@color/white" />
         </LinearLayout>
     </RelativeLayout>
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
