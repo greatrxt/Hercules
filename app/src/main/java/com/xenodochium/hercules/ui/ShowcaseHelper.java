@@ -1,11 +1,13 @@
 package com.xenodochium.hercules.ui;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wooplr.spotlight.SpotlightView;
 import com.wooplr.spotlight.utils.SpotlightListener;
 import com.xenodochium.hercules.R;
@@ -22,14 +24,19 @@ public class ShowcaseHelper {
         if(targetView == null)
             return;
 
-        SpotlightView.Builder spotlightVieBuilder  = new SpotlightView.Builder(activity).setConfiguration(Hercules.getSpotlightConfig())
-                .headingTvText(header)
-                .subHeadingTvText(text)
-                .target(targetView)
-                .usageId(usageId); //UNIQUE ID
+        try {
+            SpotlightView.Builder spotlightVieBuilder = new SpotlightView.Builder(activity).setConfiguration(Hercules.getSpotlightConfig())
+                    .headingTvText(header)
+                    .subHeadingTvText(text)
+                    .target(targetView)
+                    .usageId(usageId); //UNIQUE ID
 
-        spotlightVieBuilder.setListener(spotlightListener);
-        spotlightVieBuilder.show();
+            spotlightVieBuilder.setListener(spotlightListener);
+            spotlightVieBuilder.show();
+        } catch (Exception e){
+            e.printStackTrace();
+            FirebaseAnalytics.getInstance(activity).logEvent(e.getStackTrace().toString(), new Bundle());
+        }
     }
 
     /**
@@ -134,7 +141,7 @@ public class ShowcaseHelper {
                             runningId + "_help", ((StandardHomeListItemAdapter)listViewExercise.getAdapter()).getChildAtPosition(0).findViewById(R.id.image_button_delete));
                     break;
                 case "help":
-                    displayShowcase(activity, this,"Help","You can view this help screen again by hitting this button",
+                    displayShowcase(activity, this,"Help","You can view help screen by hitting this button",
                             runningId + "_done", buttonHelpWorkout);
                     break;
                 default:
@@ -200,7 +207,7 @@ public class ShowcaseHelper {
     }
 
     /**
-     * Help screen for body part tab
+     * Help screen for player screen
      */
     public static class PlayerHelperBuilder
             implements SpotlightListener {

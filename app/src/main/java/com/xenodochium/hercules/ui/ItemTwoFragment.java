@@ -19,6 +19,8 @@ import com.xenodochium.hercules.model.RoutineEntry;
 import java.io.Serializable;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -26,7 +28,7 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
     private ListView listViewRoutine;
     private View fragmentView;
     private FloatingActionButton buttonAddRoutine;
-    public ImageButton buttonHelpWorkout;
+    public ImageButton buttonHelpRoutine;
 
     public static ItemTwoFragment newInstance() {
         ItemTwoFragment fragment = new ItemTwoFragment();
@@ -60,7 +62,9 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
     private void initializeViews() {
         listViewRoutine = fragmentView.findViewById(R.id.list_view_routine);
         buttonAddRoutine = fragmentView.findViewById(R.id.button_add_routine);
+        buttonHelpRoutine = fragmentView.findViewById(R.id.button_help_routine);
         buttonAddRoutine.setOnClickListener(this);
+        buttonHelpRoutine.setOnClickListener(this);
         populateRoutineListView();
     }
 
@@ -71,9 +75,9 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
             case R.id.button_add_routine:
                 startActivity(new Intent(getActivity(), RoutineActivity.class));
                 break;
-            case R.id.button_help_workout:
-                new ShowcaseHelper.WorkoutHelperBuilder(getActivity(), listViewRoutine,
-                        buttonAddRoutine, buttonHelpWorkout).startShowcase(String.valueOf(System.currentTimeMillis()) + "_add");
+            case R.id.button_help_routine:
+                new ShowcaseHelper.RoutineHelperBuilder(getActivity(), listViewRoutine,
+                        buttonAddRoutine, buttonHelpRoutine).startShowcase(String.valueOf(System.currentTimeMillis()) + "_add");
                 break;
         }
     }
@@ -115,6 +119,13 @@ public class ItemTwoFragment extends Fragment implements View.OnClickListener, S
                 })
                 //.setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        new ShowcaseHelper.RoutineHelperBuilder(getActivity(), listViewRoutine,
+                buttonAddRoutine, buttonHelpRoutine).startShowcase("first_help");
     }
 
     @Override

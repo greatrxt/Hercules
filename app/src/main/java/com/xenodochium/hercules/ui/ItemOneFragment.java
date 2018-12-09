@@ -2,7 +2,6 @@ package com.xenodochium.hercules.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -131,19 +128,6 @@ public class ItemOneFragment
                 .show();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        try {
-            //show help screen
-            new ShowcaseHelper.WorkoutHelperBuilder(getActivity(), listViewExercise, buttonAddExercise, buttonHelpWorkout)
-                    .startShowcase(String.valueOf(Hercules.getInstance().getPackageManager().getPackageInfo("com.xenodochium.hercules", 0).firstInstallTime)
-                            + System.currentTimeMillis() + "_add");
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onFragmentSelected() {

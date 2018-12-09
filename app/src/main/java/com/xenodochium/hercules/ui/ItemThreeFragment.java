@@ -3,12 +3,14 @@ package com.xenodochium.hercules.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,6 +36,7 @@ public class ItemThreeFragment
     private FirebaseAnalytics mFirebaseAnalytics;
     private View fragmentView;
     private FloatingActionButton buttonAddBodyPart;
+    public ImageButton buttonHelpBodyPart;
 
     public static ItemThreeFragment newInstance() {
         ItemThreeFragment fragment = new ItemThreeFragment();
@@ -48,7 +51,9 @@ public class ItemThreeFragment
     private void initializeViews() {
         listViewBodyPart = fragmentView.findViewById(R.id.list_view_body_part);
         buttonAddBodyPart = fragmentView.findViewById(R.id.button_add_body_part);
+        buttonHelpBodyPart = fragmentView.findViewById(R.id.button_help_body_part);
         buttonAddBodyPart.setOnClickListener(this);
+        buttonHelpBodyPart.setOnClickListener(this);
         populateBodyPartListView();
     }
 
@@ -115,6 +120,17 @@ public class ItemThreeFragment
 
 
                 alertDialogAddExercise.show();
+                break;
+
+            case R.id.button_help_body_part:
+                try {
+                    //show help screen
+                    new ShowcaseHelper.BodyPartHelperBuilder(getActivity(), listViewBodyPart, buttonAddBodyPart, buttonHelpBodyPart)
+                            .startShowcase(String.valueOf(Hercules.getInstance().getPackageManager().getPackageInfo("com.xenodochium.hercules", 0).firstInstallTime)
+                                    + System.currentTimeMillis() + "_add");
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
